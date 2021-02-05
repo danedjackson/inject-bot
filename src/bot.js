@@ -17,7 +17,6 @@ const ftppassword = process.env.FTPPASSWORD;
 var steamID;
 var dinoName;
 
-console.log(prefix);
 //Create an instance of client
 const client = new Client();
 const ftpClient = new ftp.Client();
@@ -32,8 +31,6 @@ async function ftpDownload() {
             user: ftpusername,
             password: ftppassword
         });
-        console.log(await ftpClient.ftp.pwd);
-        console.log(await ftpClient.list());
         await ftpClient.downloadTo(steamID + ".zip", "512KB.zip");
         // await ftpClient.downloadTo("Injection.json", steamID + ".json");
     } catch(err){
@@ -55,7 +52,6 @@ function editJson() {
     } catch (err) {
         console.error(err);
     }
-    console.log(contents);
     fs.writeFileSync(steamID + ".json", JSON.stringify(contents));
     ftpUpload();
 }
@@ -92,7 +88,6 @@ client.on("ready", () => {
 });
 
 client.on("message", async message => {
-    console.log(`${message.author.tag}: ${message.content}`);
     if (message.author.bot) {return;}
     if (message.content.indexOf(prefix) !== 0) {return;}
 
@@ -103,7 +98,6 @@ client.on("message", async message => {
     if (command === prefix+"inject") {
         steamID = args[0];
         dinoName = args[1];
-        console.log(`In if block\n${message.author.tag}: ${message.content}`);
         ftpDownload();
     }
 });
