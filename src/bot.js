@@ -44,13 +44,18 @@ client.on("message", async message => {
             .substring(prefix.length)
             .split(/ +/g);
         if (cmdName === 'grow'){
-            if(args.length === 0) {
+            if(args.length != 2) {
                 return message.reply(
                     'please tell me your steam ID and the Dino you are requesting with the format:\n' +
                     `${prefix}grow [your steam ID] [dinosaur on server to grow]`);
             }
             steamID = args[0];
             dinoName = args[1];
+            if(dinoName.length < 3) {
+                return message.reply(
+                    `I do not know a dino by the name of ${dinoName}`
+                );
+            }
             //waits for axios to finish its call to assign cash and bank values.
             await getUserAmount(message.guild.id, message.author.id);
 
@@ -63,9 +68,8 @@ client.on("message", async message => {
                 }
             }
             if(cash > price) {
-                await ftpDownload();
-                await editJson(message);
-                deleteLocalFile();
+                //Start ftp chain call
+                await ftpDownload(message);
             } else {
                 return message.reply('You do not have enough funds for this dino.');
             }
@@ -120,7 +124,7 @@ async function deductUserAmount(guildID, userID, price) {
 }
 
 //FTP Connections
-async function ftpDownload() {
+async function ftpDownload(message) {
     ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
     try {
@@ -132,17 +136,20 @@ async function ftpDownload() {
         });
         // console.log(await ftpClient.ftp.pwd);
         // console.log(await ftpClient.list());
-        await ftpClient.downloadTo(steamID + ".json", "512KB.zip");
+
+        //downloadTp(LocalFile <- RemoteFile)
+        await ftpClient.downloadTo(steamID + ".json", steamID + ".json");
         // await ftpClient.downloadTo("Injection.json", steamID + ".json");
     } catch(err){
-        console.error(err);
+        console.error("Error downloading file: " + err.message);
+        return message.reply('something went wrong trying to grow your dino. Did you enter the correct steam ID?');
     }
     ftpClient.close();
-    // await editJson();
+    await editJson(message);
 }
 
 async function editJson(message) {
-    let data = fs.readFileSync("Injection.json", "utf-8");
+    let data = fs.readFileSync(steamID + ".json", "utf-8");
     var contents;
     try {
         contents = JSON.parse(data);
@@ -155,7 +162,8 @@ async function editJson(message) {
             return message.reply(`you do not have a ${dinoName} on the server.\nHave you created one and safelogged?`);
         }
     } catch (err) {
-        console.error(err);
+        console.error("Error editing local JSON: " + err.message);
+        return message.reply('something went wrong trying to grow your dino. Please try again later');
     }
     console.log(contents);
     fs.writeFileSync(steamID + ".json", JSON.stringify(contents));
@@ -173,12 +181,14 @@ async function ftpUpload(message) {
             user: ftpusername,
             password: ftppassword
         });
-        await ftpClient.uploadFrom(steamID + ".json", "./upload/" + steamID + ".json");
+        await ftpClient.uploadFrom(steamID + ".json", steamID + ".json");
         await deductUserAmount(message.guild.id, message.author.id, price);
         message.reply('Dino grown successfully.');
     } catch(err){
-        console.error(err);
+        console.error("Error uploading JSON file: " + err.message);
+        return message.reply('something went wrong trying to grow your dino. Please try again later');
     }
+    deleteLocalFile();
     ftpClient.close();
 }
 
