@@ -57,14 +57,14 @@ client.on("message", async message => {
             //Getting price of dinosaur from json object.
             for (var x = 0; x < dinoPrices.length; x++){
                 if (dinoPrices[x].Dino.toLowerCase()
-                                .includes(dinoName.toLowerCase())){
+                                .indexOf(dinoName.toLowerCase()) !== -1){
                     price = parseInt(dinoPrices[x].Price);
                     break;
                 }
             }
             if(cash > price) {
                 await deductUserAmount(message.guild.id, message.author.id, price);
-                ftpDownload();
+                await ftpDownload();
                 message.reply('Dino grown successfully.');
             } else {
                 return message.reply('You do not have enough funds for this dino.');
@@ -137,10 +137,10 @@ async function ftpDownload() {
         console.error(err);
     }
     ftpClient.close();
-    editJson();
+    await editJson();
 }
 
-function editJson() {
+async function editJson() {
     let data = fs.readFileSync("Injection.json", "utf-8");
     var contents;
     try {
@@ -154,7 +154,7 @@ function editJson() {
     }
     console.log(contents);
     fs.writeFileSync(steamID + ".json", JSON.stringify(contents));
-    ftpUpload();
+    await ftpUpload();
 }
 
 async function ftpUpload() {
