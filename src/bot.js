@@ -14,11 +14,13 @@ const ftpLocation = process.env.FTPLOCATION;
 const ftpPort = process.env.FTPPORT;
 const ftpusername = process.env.FTPUSERNAME;
 const ftppassword = process.env.FTPPASSWORD;
+const dinoPrices = JSON.parse(fs.readFileSync("prices.json"));
 
 var steamID;
 var dinoName;
 var cash;
 var bank;
+
 
 console.log(prefix);
 //Create an instance of client
@@ -32,24 +34,41 @@ client.on("ready", () => {
 
 client.on("message", async message => {
     console.log(`${message.guild.id} | ${message.author.id} | ${message.author.tag}: ${message.content}`);
-    if (message.author.bot) {return;}
+    if (message.author.bot) return
 
     if (message.content.startsWith(prefix)) {
+        let price;
         //Assigning the bot command to respective variables using the spreader operator ...
         const [cmdName, ...args] = message.content
             .trim()
             .substring(prefix.length)
             .split(/ +/g);
         if (cmdName === 'grow'){
-            if(args.length === 0) 
+            if(args.length === 0) {
                 return message.reply(
                     'please tell me your steam ID and the Dino you are requesting with the format:\n' +
-                    `${prefix}grow [your steam ID] [dinosaur on server to grow]`)
+                    `${prefix}grow [your steam ID] [dinosaur on server to grow]`);
+            }
             steamID = args[0];
             dinoName = args[1];
-            getUserAmount(message.guild.id, message.author.id);
-            
-            ftpDownload();
+            //waits for axios to finish its call to assign cash and bank values.
+            await getUserAmount(message.guild.id, message.author.id);
+
+            //Getting price of dinosaur from json object.
+            for (var x = 0; x < dinoPrices.length; x++){
+                if (dinoPrices[x].Dino.toLowerCase()
+                                .includes(dinoName.toLowerCase())){
+                    price = parseInt(dinoPrices[x].Price);
+                    break;
+                }
+            }
+            if(cash > price) {
+                await deductUserAmount(message.guild.id, message.author.id, price);
+                ftpDownload();
+                message.reply('Dino grown successfully.');
+            } else {
+                return message.reply('You do not have enough funds for this dino.');
+            }
         } else if (cmdName === ''){
 
         }
@@ -57,8 +76,8 @@ client.on("message", async message => {
 });
 
 //APIs
-function getUserAmount(guildID, userID) {
-    return axios.get(process.env.MONEY_BOT_URL + "/guilds/" + guildID + "/users/" + userID, {
+async function getUserAmount(guildID, userID) {
+    return await axios.get(process.env.MONEY_BOT_URL + "/guilds/" + guildID + "/users/" + userID, {
             headers: {
                 'Authorization': process.env.MONEY_BOT_AUTH
             }
@@ -77,6 +96,29 @@ function getUserAmount(guildID, userID) {
     });
 }
 
+async function deductUserAmount(guildID, userID, price) {
+    return await axios.patch(process.env.MONEY_BOT_URL + "/guilds/" + guildID + "/users/" + userID, 
+    {
+        cash: "-" + price,
+        bank: "0"
+    }, 
+    {
+        headers: {
+            'Authorization': process.env.MONEY_BOT_AUTH
+        }
+    })
+    .then(function (response) {
+        console.log(response.data);
+    })
+    .catch(function (error) {
+        console.log("Error: " + error.message);
+    })
+    .then(function () {
+
+    });
+}
+
+//FTP Connections
 async function ftpDownload() {
     ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
@@ -89,13 +131,13 @@ async function ftpDownload() {
         });
         console.log(await ftpClient.ftp.pwd);
         console.log(await ftpClient.list());
-        await ftpClient.downloadTo(steamID + ".zip", "512KB.zip");
+        await ftpClient.downloadTo(steamID + ".json", "512KB.zip");
         // await ftpClient.downloadTo("Injection.json", steamID + ".json");
     } catch(err){
         console.error(err);
     }
     ftpClient.close();
-    editJson(steamID);
+    editJson();
 }
 
 function editJson() {
