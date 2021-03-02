@@ -15,6 +15,7 @@ const ftpPort = process.env.FTPPORT;
 const ftpusername = process.env.FTPUSERNAME;
 const ftppassword = process.env.FTPPASSWORD;
 const dinoPrices = JSON.parse(fs.readFileSync("prices.json"));
+const adultNames = JSON.parse(fs.readFileSync("names.json"));
 
 var steamID;
 var dinoName;
@@ -152,8 +153,16 @@ async function editJson(message) {
     let data = fs.readFileSync(steamID + ".json", "utf-8");
     var contents;
     try {
-        contents = JSON.parse(data);
+        contents = JSON.parse(data);;
+        console.log(adultNames);
         if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) != -1){
+            //Change the value of juvi to Adult from the list of adult names defined
+            for(var i = 0; i < adultNames.length; i++) {
+                console.log("From Names Json: " + adultNames[i].Dino.toLowerCase());
+                if(adultNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
+                    contents.CharacterClass = adultNames[i].Name;
+                }
+            }
             contents.Growth = "1.0";
             contents.Hunger = "9999";
             contents.Thirst = "9999";
@@ -162,7 +171,7 @@ async function editJson(message) {
             return message.reply(`you do not have a ${dinoName} on the server.\nHave you created one and safelogged?`);
         }
     } catch (err) {
-        console.error("Error editing local JSON: " + err.message);
+        console.error("Error editing local JSON: " + err);
         return message.reply('something went wrong trying to grow your dino. Please try again later');
     }
     console.log(contents);

@@ -1,0 +1,62 @@
+[
+    {
+        "Dino": "Utahraptor",
+        "Name": "UtahAdultS"
+    },
+    {
+        "Dino": "Dilophosaurus",
+        "Name": "DiloAdultS"
+    },
+    {
+        "Dino": "Ceratosaurus",
+        "Name": "CeraAdultS"
+    },
+    {
+        "Dino": "Carnotaurus",
+        "Name": "CarnoAdultS"
+    },
+    {
+        "Dino": "Allosaurus",
+        "Name": ""
+    },
+    {
+        "Dino": "Suchomimus",
+        "Name": ""
+    },
+    {
+        "Dino": "Tyrannosaurus Rex",
+        "Name": ""
+    },
+    {
+        "Dino": "Giganotosaurus",
+        "Name": ""
+    },
+    {
+        "Dino": "Dryosaurous",
+        "Name": ""
+    },
+    {
+        "Dino": "Maiasaura",
+        "Name": ""
+    },
+    {
+        "Dino": "Gallimimus",
+        "Name": ""
+    },
+    {
+        "Dino": "Pachycephalosaurus",
+        "Name": ""
+    },
+    {
+        "Dino": "Diabloceratops",
+        "Name": ""
+    },
+    {
+        "Dino": "Parasaurolophus",
+        "Name": ""
+    },
+    {
+        "Dino": "Triceratops",
+        "Name": ""
+    }
+]
