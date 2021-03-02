@@ -7,6 +7,13 @@ const { Client } = require('discord.js');
 const ftp = require('basic-ftp');
 const fs = require('fs');
 const axios = require('axios');
+const https = require('https');
+
+//Heroko hosting :,)
+https.get('/', response => {
+    console.log('Hello, I am awake');
+    return response.send('Hello I am awake!');
+})
 
 const token = process.env.BOT_TOKEN;
 const prefix = process.env.PREFIX;
