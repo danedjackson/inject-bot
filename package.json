@@ -24,6 +24,7 @@
     "basic-ftp": "^4.6.3",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
-    "ftp": "^0.3.10"
+    "ftp": "^0.3.10",
+    "http": "0.0.1-security"
   }
 }
