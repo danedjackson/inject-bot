@@ -153,12 +153,10 @@ async function editJson(message) {
     let data = fs.readFileSync(steamID + ".json", "utf-8");
     var contents;
     try {
-        contents = JSON.parse(data);;
-        console.log(adultNames);
+        contents = JSON.parse(data);
         if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) != -1){
             //Change the value of juvi to Adult from the list of adult names defined
             for(var i = 0; i < adultNames.length; i++) {
-                console.log("From Names Json: " + adultNames[i].Dino.toLowerCase());
                 if(adultNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
                     contents.CharacterClass = adultNames[i].Name;
                 }
