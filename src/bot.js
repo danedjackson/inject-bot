@@ -29,6 +29,11 @@ var bank;
 const client = new Client();
 const ftpClient = new ftp.Client();
 
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Our app is running on port ${ PORT }`);
+});
+
 client.on("ready", () => {
     console.log(`${client.user.tag} logged in.`)
     client.user.setActivity('in VSCODE.');
