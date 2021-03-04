@@ -194,7 +194,7 @@ async function ftpUpload(message) {
             user: ftpusername,
             password: ftppassword
         });
-        await ftpClient.uploadFrom(steamID + ".json", steamID + ".json");
+        //await ftpClient.uploadFrom(steamID + ".json", steamID + ".json");
         await deductUserAmount(message.guild.id, message.author.id, price);
         message.reply('Dino grown successfully.');
     } catch(err){
