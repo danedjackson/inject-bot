@@ -30,10 +30,14 @@ var bank;
 const client = new Client();
 const ftpClient = new ftp.Client();
 
+//Keep Bot alive on Heruko
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Our app is running on port ${ PORT }`);
 });
+app.get('/',(req,res) => {
+    return res.send('Hello');
+    });
 
 client.on("ready", () => {
     console.log(`${client.user.tag} logged in.`)
