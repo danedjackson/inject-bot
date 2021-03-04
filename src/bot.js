@@ -146,7 +146,8 @@ async function ftpDownload(message) {
 }
 
 async function editJson(message) {
-    let data = fs.readFileSync(steamID + ".json", "utf-8");
+    // let data = fs.readFileSync(steamID + ".json", "utf-8");
+    let data = fs.readFileSync("injection.json", "utf-8");
     var contents;
     try {
         contents = JSON.parse(data);
