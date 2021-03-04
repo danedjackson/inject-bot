@@ -136,7 +136,7 @@ async function deductUserAmount(guildID, userID, price) {
 
 //FTP Connections
 async function ftpDownload(message) {
-    ftpClient.ftp.verbose = true;
+    //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
     try {
         await ftpClient.access({
@@ -185,7 +185,7 @@ async function editJson(message) {
 
 async function ftpUpload(message) {
     console.log("Uploading file. . .")
-    ftpClient.ftp.verbose = true;
+    //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
     try {
         await ftpClient.access({
