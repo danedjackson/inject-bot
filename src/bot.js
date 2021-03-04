@@ -7,7 +7,7 @@ const { Client } = require('discord.js');
 const ftp = require('basic-ftp');
 const fs = require('fs');
 const axios = require('axios');
-
+const express = require('express');
 
 const token = process.env.BOT_TOKEN;
 const prefix = process.env.PREFIX;
@@ -18,6 +18,7 @@ const ftppassword = process.env.FTPPASSWORD;
 const dinoPrices = JSON.parse(fs.readFileSync("prices.json"));
 const adultNames = JSON.parse(fs.readFileSync("names.json"));
 
+var app = express();
 var steamID;
 var dinoName;
 var cash;
