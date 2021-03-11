@@ -33,7 +33,7 @@ const ftpClient = new ftp.Client();
 //Keep Bot alive on Heruko
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Our app is running on port ${ PORT }`);
+    console.log(`Running on port ${ PORT }`);
 });
 app.get('/',(req,res) => {
     return res.send('Hello');
@@ -41,14 +41,14 @@ app.get('/',(req,res) => {
 
 client.on("ready", () => {
     console.log(`${client.user.tag} logged in.`)
-    client.user.setActivity('in VSCODE.');
+    client.user.setActivity('with babu Dibbles.');
 });
 
 client.on("message", async message => {
-    console.log(`${message.guild.id} | ${message.author.id} | ${message.author.tag}: ${message.content}`);
     if (message.author.bot) return
 
     if (message.content.startsWith(prefix)) {
+        console.log(`${message.guild.id} | ${message.author.id} | ${message.author.tag}: ${message.content}`);
         //Assigning the bot command to respective variables using the spreader operator ...
         const [cmdName, ...args] = message.content
             .trim()
@@ -124,7 +124,7 @@ async function deductUserAmount(guildID, userID, price) {
         }
     })
     .then(function (response) {
-        console.log(response.data);
+        // console.log(response.data);
     })
     .catch(function (error) {
         console.log("Error: " + error.message);
@@ -136,6 +136,7 @@ async function deductUserAmount(guildID, userID, price) {
 
 //FTP Connections
 async function ftpDownload(message) {
+    console.log("Downloading file. . .");
     //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
     try {
@@ -183,7 +184,7 @@ async function editJson(message) {
 }
 
 async function ftpUpload(message) {
-    console.log("Uploading file. . .")
+    console.log("Uploading file. . .");
     //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
     try {
