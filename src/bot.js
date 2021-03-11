@@ -161,7 +161,8 @@ async function editJson(message) {
     try {
         contents = JSON.parse(data);
         if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) != -1){
-            if(dinoName.toLowerCase == 'cera') dinoName = 'ceratosaurus';
+            if(dinoName.toLowerCase === 'cera') dinoName = 'ceratosaurus';
+            console.log(dinoName);
             //Change the value of juvi to Adult from the list of adult names defined
             for(var i = 0; i < adultNames.length; i++) {
                 if(adultNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
