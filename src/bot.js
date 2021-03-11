@@ -145,8 +145,7 @@ async function ftpDownload(message) {
             user: ftpusername,
             password: ftppassword
         });
-        await ftpClient.downloadTo(steamID + ".zip", "512KB.zip");
-        // await ftpClient.downloadTo("Injection.json", steamID + ".json");
+        await ftpClient.downloadTo(steamID + ".json", "/23.227.165.234_14010/TheIsle/Saved/Databases/Survival/Players/"  + steamID + ".json");
     } catch(err){
         console.error("Error downloading file: " + err.message);
         return message.reply('something went wrong trying to grow your dino. Did you enter the correct steam ID?');
@@ -156,8 +155,7 @@ async function ftpDownload(message) {
 }
 
 async function editJson(message) {
-    // let data = fs.readFileSync(steamID + ".json", "utf-8");
-    let data = fs.readFileSync("injection.json", "utf-8");
+    let data = fs.readFileSync(steamID + ".json", "utf-8");
     var contents;
     try {
         contents = JSON.parse(data);
@@ -172,6 +170,7 @@ async function editJson(message) {
             contents.Hunger = "9999";
             contents.Thirst = "9999";
             contents.Stamina = "9999";
+            contents.Health = "9999";
         } else {
             return message.reply(`you do not have a ${dinoName} on the server.\nHave you created one and safelogged?`);
         }
@@ -194,7 +193,7 @@ async function ftpUpload(message) {
             user: ftpusername,
             password: ftppassword
         });
-        //await ftpClient.uploadFrom(steamID + ".json", steamID + ".json");
+        await ftpClient.uploadFrom(steamID + ".json", "/23.227.165.234_14010/TheIsle/Saved/Databases/Survival/Players/" +steamID + ".json");
         await deductUserAmount(message.guild.id, message.author.id, price);
         message.reply('Dino grown successfully.');
     } catch(err){

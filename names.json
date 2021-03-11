@@ -9,7 +9,7 @@
     },
     {
         "Dino": "Ceratosaurus",
-        "Name": "CeraAdultS"
+        "Name": "CeratoAdultS"
     },
     {
         "Dino": "Carnotaurus",
@@ -17,46 +17,46 @@
     },
     {
         "Dino": "Allosaurus",
-        "Name": ""
+        "Name": "AlloAdultS"
     },
     {
         "Dino": "Suchomimus",
-        "Name": ""
+        "Name": "SuchoAdultS"
     },
     {
         "Dino": "Tyrannosaurus Rex",
-        "Name": ""
+        "Name": "RexAdultS"
     },
     {
         "Dino": "Giganotosaurus",
-        "Name": ""
+        "Name": "GigaAdultS"
     },
     {
         "Dino": "Dryosaurous",
-        "Name": ""
+        "Name": "DryoAdultS"
     },
     {
         "Dino": "Maiasaura",
-        "Name": ""
+        "Name": "MaiaAdultS"
     },
     {
         "Dino": "Gallimimus",
-        "Name": ""
+        "Name": "GalliAdultS"
     },
     {
         "Dino": "Pachycephalosaurus",
-        "Name": ""
+        "Name": "PachyAdultS"
     },
     {
         "Dino": "Diabloceratops",
-        "Name": ""
+        "Name": "DiabloAdultS"
     },
     {
         "Dino": "Parasaurolophus",
-        "Name": ""
+        "Name": "ParaAdultS"
     },
     {
         "Dino": "Triceratops",
-        "Name": ""
+        "Name": "TrikeAdultS"
     }
 ]
