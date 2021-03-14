@@ -1,10 +1,10 @@
-[
+[    
     {
-        "Dino": "Utahraptor",
-        "Price": 20000
+        "Dino": "Allosaurus",
+        "Price": 35000
     },
     {
-        "Dino": "Dilophosaurus",
+        "Dino": "Carnotaurus",
         "Price": 20000
     },
     {
@@ -12,35 +12,27 @@
         "Price": 20000
     },
     {
-        "Dino": "Carnotaurus",
+        "Dino": "Diabloceratops",
         "Price": 20000
     },
     {
-        "Dino": "Allosaurus",
-        "Price": 35000
-    },
-    {
-        "Dino": "Suchomimus",
-        "Price": 35000
-    },
-    {
-        "Dino": "Tyrannosaurus Rex",
-        "Price": 60000
-    },
-    {
-        "Dino": "Giganotosaurus",
-        "Price": 50000
+        "Dino": "Dilophosaurus",
+        "Price": 20000
     },
     {
         "Dino": "Dryosaurous",
         "Price": 10000
     },
     {
-        "Dino": "Maiasaura",
+        "Dino": "Gallimimus",
         "Price": 20000
     },
     {
-        "Dino": "Gallimimus",
+        "Dino": "Giganotosaurus",
+        "Price": 50000
+    },
+    {
+        "Dino": "Maiasaura",
         "Price": 20000
     },
     {
@@ -48,15 +40,23 @@
         "Price": 20000
     },
     {
-        "Dino": "Diabloceratops",
-        "Price": 20000
-    },
-    {
         "Dino": "Parasaurolophus",
         "Price": 20000
     },
     {
+        "Dino": "Suchomimus",
+        "Price": 35000
+    },
+    {
         "Dino": "Triceratops",
         "Price": 50000
+    },
+    {
+        "Dino": "Tyrannosaurus Rex",
+        "Price": 60000
+    },
+    {
+        "Dino": "Utahraptor",
+        "Price": 20000
     }
 ]

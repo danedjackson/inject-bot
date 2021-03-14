@@ -3,7 +3,7 @@ require('dotenv').config();
 // console.log(process.env.BOT_TOKEN);
 
 //Importing from discord.js module
-const { Client } = require('discord.js');
+const Discord = require('discord.js');
 const ftp = require('basic-ftp');
 const fs = require('fs');
 const axios = require('axios');
@@ -27,7 +27,7 @@ var bank;
 
 
 //Create an instance of client
-const client = new Client();
+const client = new Discord.Client();
 const ftpClient = new ftp.Client();
 
 //Keep Bot alive on Heruko
@@ -48,12 +48,13 @@ client.on("message", async message => {
     if (message.author.bot) return
 
     if (message.content.startsWith(prefix)) {
-        console.log(`${message.guild.id} | ${message.author.id} | ${message.author.tag}: ${message.content}`);
+        // console.log(`${message.guild.id} | ${message.author.id} | ${message.author.tag}: ${message.content}`);
         //Assigning the bot command to respective variables using the spreader operator ...
         const [cmdName, ...args] = message.content
             .trim()
             .substring(prefix.length)
             .split(/ +/g);
+
         if (cmdName === 'grow'){
             if(args.length != 2) {
                 return message.reply(
@@ -81,11 +82,13 @@ client.on("message", async message => {
             if(cash > price) {
                 //Start ftp chain call
                 await ftpDownload(message);
-            } else {
+            } else if (cash < price) {
                 return message.reply('You do not have enough funds for this dino.');
+            } else {
+                return message.reply(`I'm having trouble growing that dino. Is it a survival dinosaur?`);
             }
-        } else if (cmdName === ''){
-
+        } else if (cmdName === 'buy'){
+            await getDinoPrices(message);
         }
     }
 });
@@ -211,5 +214,26 @@ async function deleteLocalFile() {
     fs.unlink("./" + steamID + ".json", (err) => {
         if (err) throw err;
     });
+}
+
+//Misc
+async function getDinoPrices(message) {
+    let file = fs.readFileSync('prices.json');
+    var data = JSON.parse(file);
+    var msg = "";
+
+    for (var x = 0; x < data.length; x++){
+        msg += data[x].Dino + ": $" + data[x].Price.toLocaleString() + "\n\n";
+    }
+
+    const embed = new Discord.MessageEmbed()
+    .setTitle('To request a grow, use the command:\n~grow [YOUR  STEAM ID] [DINOSAUR TO GROW]')
+    .setColor('#DAF7A6')
+    .addFields(
+        {name: "\n🦎__**DINOSAUR PRICES (Points)**__🦎\n\n",
+        value: msg}
+    )
+    
+    return message.reply(embed);
 }
 client.login(token);
