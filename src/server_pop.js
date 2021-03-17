@@ -1,19 +1,10 @@
-const axios = require('axios');
+module.exports = function (client, count) {
+    const guildID = process.env.GUILDID;
 
+    var updateCount = guild => {
+        client.user.setActivity(`${count} / 150 players.`, { type: 'WATCHING' });
+    }
 
-
-module.exports = async function () {
-    var count;
-    await axios.get('https://server-count.herokuapp.com/serv-count')
-    .then(function (response) {
-        // handle success
-        console.log(response)
-    })
-    .catch(function (error) {
-        // handle error
-        console.log("Error: " + error.message);
-    })
-    .then(function () {
-        // always executed
-    });
+    const guild = client.guilds.cache.get(guildID);
+    updateCount(guild);
 }

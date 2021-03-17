@@ -8,6 +8,7 @@ const ftp = require('basic-ftp');
 const fs = require('fs');
 const axios = require('axios');
 const express = require('express');
+const updateCount = require('./server_pop.js');
 
 const token = process.env.BOT_TOKEN;
 const prefix = process.env.PREFIX;
@@ -47,7 +48,7 @@ client.on("ready", () => {
 
 function serverCountLoop() {
     setTimeout(function() {
-        getServerCount();
+        getServerCount(updateCount(client, serverCount));
         serverCountLoop();
     }, 10000);
 }
@@ -104,7 +105,7 @@ client.on("message", async message => {
 });
 
 //APIs
-async function getServerCount() {
+async function getServerCount( callback ) {
     return await axios.get("https://server-count.herokuapp.com/serv-count")
         .then(function (response){
             console.log(response.data)
@@ -114,7 +115,7 @@ async function getServerCount() {
             console.log("Error fetching server count: " + error)
         })
         .then(function () {
-
+            callback;
         })
 }
 
