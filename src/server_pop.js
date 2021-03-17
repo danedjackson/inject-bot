@@ -1,10 +1,13 @@
-module.exports = function (client, count) {
+module.exports = async function (client, count) {
     const guildID = process.env.GUILDID;
 
-    var updateCount = guild => {
-        client.user.setActivity(`${count} / 150 players.`, { type: 'WATCHING' });
+    async function updateCount () {
+        if(count){
+            console.log(`Updating user count with value ... ${count}`);
+            client.user.setActivity(`${count} / 150 players.`, { type: 'WATCHING' });
+        }
     }
 
     const guild = client.guilds.cache.get(guildID);
-    updateCount(guild);
+    return await updateCount();
 }

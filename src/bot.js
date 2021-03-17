@@ -47,10 +47,12 @@ client.on("ready", () => {
 });
 
 function serverCountLoop() {
-    setTimeout(function() {
-        getServerCount(updateCount(client, serverCount));
+    setTimeout(async function() {
+        await getServerCount();
+        await updateCount(client, serverCount);
+        console.log(`Server count: ${serverCount}`);
         serverCountLoop();
-    }, 10000);
+    }, 5000);
 }
 
 serverCountLoop();
@@ -105,17 +107,16 @@ client.on("message", async message => {
 });
 
 //APIs
-async function getServerCount( callback ) {
+async function getServerCount() {
     return await axios.get("https://server-count.herokuapp.com/serv-count")
         .then(function (response){
-            console.log(response.data)
+            console.log(`Response: ${response.data}`);
             serverCount = response.data;
         })
         .catch(function (error) {
-            console.log("Error fetching server count: " + error)
+            console.log("Error fetching server count: " + error);
         })
         .then(function () {
-            callback;
         })
 }
 
