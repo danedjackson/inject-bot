@@ -24,6 +24,7 @@ var dinoName;
 var cash;
 var price;
 var bank;
+var serverCount;
 
 
 //Create an instance of client
@@ -43,6 +44,15 @@ client.on("ready", () => {
     console.log(`${client.user.tag} logged in.`)
     client.user.setActivity('with babu Dibbles.');
 });
+
+function serverCountLoop() {
+    setTimeout(function() {
+        getServerCount();
+        serverCountLoop();
+    }, 10000);
+}
+
+serverCountLoop();
 
 client.on("message", async message => {
     if (message.author.bot) return
@@ -94,6 +104,20 @@ client.on("message", async message => {
 });
 
 //APIs
+async function getServerCount() {
+    return await axios.get("https://server-count.herokuapp.com/serv-count")
+        .then(function (response){
+            console.log(response.data)
+            serverCount = response.data;
+        })
+        .catch(function (error) {
+            console.log("Error fetching server count: " + error)
+        })
+        .then(function () {
+
+        })
+}
+
 async function getUserAmount(guildID, userID) {
     return await axios.get(process.env.MONEY_BOT_URL + "/guilds/" + guildID + "/users/" + userID, {
             headers: {

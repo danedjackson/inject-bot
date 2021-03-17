@@ -58,5 +58,43 @@
     {
         "Dino": "Triceratops",
         "Name": "TrikeAdultS"
+    },
+    {
+        "Dino": "Spinosaurus",
+        "Name": "Spino"
+    },
+    {
+        "Dino": "Acrocanthosaurus",
+        "Name": ""
+    },
+    {
+        "Dino": "Albertosaurus",
+        "Name": ""
+    },
+    {
+        "Dino": "Austroraptor",
+        "Name": ""
+    },
+    {
+        "Dino": "Baryonyx",
+        "Name": ""
+    },{
+        "Dino": "Herrerasaurus",
+        "Name": ""
+    },{
+        "Dino": "Velociraptor",
+        "Name": ""
+    },{
+        "Dino": "Ankylosaurus",
+        "Name": "Camarasaurus"
+    },{
+        "Dino": "Therizinosaurus",
+        "Name": ""
+    },{
+        "Dino": "Shantungosaurus",
+        "Name": ""
+    },{
+        "Dino": "Stegosaurus",
+        "Name": ""
     }
 ]
