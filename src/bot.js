@@ -135,7 +135,7 @@ client.on("message", async message => {
                     questions.addFields({name: "Enter your steam ID", value: "Either click the 17 digit code next to your name in game to copy it and paste it here.\n\nOr go to Steam > View > Settings > Interface > Check 'Display web address bars when available' > Go to your profile. Your steam ID is the 17 digit code in the address bar."});
                     message.reply(questions);
                     await message.channel.awaitMessages(filter, options).then((collected)=>{steamID = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
-                    if(cancelCheck(message, steamId)) return false;
+                    if(cancelCheck(message, steamID)) return false;
                 }
 
                 questions.fields = [];
