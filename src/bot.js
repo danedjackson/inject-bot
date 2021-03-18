@@ -9,7 +9,6 @@ const fs = require('fs');
 const axios = require('axios');
 const express = require('express');
 const updateCount = require('./server_pop.js');
-const { POINT_CONVERSION_COMPRESSED } = require('constants');
 
 const token = process.env.BOT_TOKEN;
 const prefix = process.env.PREFIX;
@@ -60,6 +59,13 @@ function serverCountLoop() {
     }, 5000);
 }
 
+function cancelCheck(msg) {
+    if (msg.toLowerCase() === "cancel") {
+        return true;
+    }
+    return false;
+}
+
 serverCountLoop();
 
 client.on("message", async message => {
@@ -72,7 +78,101 @@ client.on("message", async message => {
             .trim()
             .substring(prefix.length)
             .split(/ +/g);
-        if (cmdName === 'inject') {
+        
+        //Collector for more intuitive buying
+        if (cmdName.toLowerCase() === 'buy') {
+            if (args.length == 0) {
+                var msg;
+                var command;
+                const filter = m => m.author.id === message.author.id;
+                const options = {
+                    max: 1
+                };
+                message.reply(`do you want to grow? Or do you want to inject?\nPlease type grow or inject`);
+                await message.channel.awaitMessages(filter, options).then((collected)=>{command = collected.first().content});
+                
+                message.reply(`please type 1 for server one, or 2 for server two.`);
+                await message.channel.awaitMessages(filter, options).then((collected)=>{server = collected.first().content});
+
+                message.reply(`please type m for male or f for female.`);
+                await message.channel.awaitMessages(filter, options).then((collected)=>{gender = collected.first().content});
+
+                message.reply(`please type the desired dinosaur.`);
+                await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content});
+
+                message.reply(`please enter the steam ID`);
+                await message.channel.awaitMessages(filter, options).then((collected)=>{steamID = collected.first().content});
+                console.log(`${command} ${server} ${gender} ${dinoName} ${steamID}`);
+
+                if (command.toLowerCase() === "inject") {
+                    if(dinoName.length < 3) {
+                        return message.reply(
+                            `I do not know a dino by the name of ${dinoName}.`
+                        );
+                    }
+                    await getUserAmount(message.guild.id, message.author.id);
+                    price = null;
+        
+                    for (var x = 0; x < injectDinoPrices.length; x++) {
+                        if(injectDinoPrices[x].Dino.toLowerCase()
+                                        .indexOf(dinoName.toLowerCase()) !== -1) {
+                            price = parseInt(injectDinoPrices[x].Price);
+                            break;
+                        }
+                    }
+                    
+                    if(!price) {
+                        return message.reply(`that dino cannot be injected.`);
+                    }
+                    if(bank > price) {
+                        paymentMethod = "bank";
+                        await ftpDownload(message, server, "inject");
+                    } else if(cash >= price) {
+                        paymentMethod = "cash";
+                        await ftpDownload(message, server, "inject");
+                    } else if (cash <= price && bank < price) {
+                        return message.reply('you do not have enough points for this dino.');
+                    } else {
+                        return message.reply(`I'm having trouble growing that dino.`);
+                    }
+                } else if (command.toLowerCase() === "grow") {
+                    if(dinoName.length < 3) {
+                        return message.reply(
+                            `I do not know a dino by the name of ${dinoName}.`
+                        );
+                    }
+                    //waits for axios to finish its call to assign cash and bank values.
+                    await getUserAmount(message.guild.id, message.author.id);
+                    price = null;
+        
+                    //Getting price of dinosaur from json object.
+                    for (var x = 0; x < dinoPrices.length; x++){
+                        if (dinoPrices[x].Dino.toLowerCase()
+                                        .indexOf(dinoName.toLowerCase()) !== -1){
+                            price = parseInt(dinoPrices[x].Price);
+                            break;
+                        }
+                    }
+                    if(bank > price) {
+                        //Start ftp chain call
+                        paymentMethod = "bank";
+                        await ftpDownload(message, server, "grow");
+                    } else if(cash >= price) {
+                        paymentMethod = "cash";
+                        await ftpDownload(message, server, "grow");
+                    } else if (cash <= price && bank < price) {
+                        return message.reply('you do not have enough points for this dino.');
+                    } else {
+                        return message.reply(`I'm having trouble growing that dino.`);
+                    }
+                }
+            }
+            else {
+                message.reply(`please use ~buy`);
+            }
+        }
+
+        if (cmdName.toLowerCase() === 'inject') {
             if(args.length != 4) {
                 return message.reply(
                     'please tell me your steam ID and the dino you are requesting with the format:\n' +
@@ -114,7 +214,7 @@ client.on("message", async message => {
             }
         }
 
-        if (cmdName === 'grow'){
+        if (cmdName.toLowerCase() === 'grow'){
             if(args.length != 3) {
                 return message.reply(
                     'please tell me your steam ID and the dino you are requesting with the format:\n' +
@@ -152,7 +252,9 @@ client.on("message", async message => {
             } else {
                 return message.reply(`I'm having trouble growing that dino.`);
             }
-        } else if (cmdName === 'price'){
+        } 
+
+        if (cmdName === 'price'){
             await getDinoPrices(message);
         }
     }
