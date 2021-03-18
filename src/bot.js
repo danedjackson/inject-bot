@@ -95,8 +95,7 @@ client.on("message", async message => {
                 const filter = m => m.author.id === message.author.id;
                 const options = {
                     max: 1,
-                    time: 30000,
-                    errors: ['time']
+                    time: 30000
                 };
                 const questions = new Discord.MessageEmbed()
                     .setTitle('Buy Interactive Menu')
@@ -138,6 +137,10 @@ client.on("message", async message => {
                     await message.channel.awaitMessages(filter, options).then((collected)=>{steamID = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
                     if(cancelCheck(message, steamId)) return false;
                 }
+
+                questions.fields = [];
+                questions.setTitle("Please wait . . .");
+                message.reply(questions);
 
                 if (command.toLowerCase() === "inject") {
                     if (await getSteamID(message.author.id) == false) return message.reply(`in order to use inject, you must link your steam ID\nuse ~link [steam ID here]`);
@@ -548,7 +551,7 @@ async function getDinoPrices(message) {
     }
 
     const embed = new Discord.MessageEmbed()
-    .setTitle('To request a grow, use the command:\n~grow [YOUR  STEAM ID] [DINOSAUR TO GROW]')
+    .setTitle('To request a grow, use the command:\n~grow [server] [dinosaur to grow] [steam ID]\nOr use the interactive buying option:\n~buy')
     .setColor('#DAF7A6')
     .addFields(
         {name: "\n🦎__**DINOSAUR PRICES (Points)**__🦎\n\n",
