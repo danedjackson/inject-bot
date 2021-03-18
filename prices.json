@@ -1,7 +1,31 @@
 [    
     {
+        "Dino": "Acrocanthosaurus",
+        "Price": 35000
+    },
+    {
+        "Dino": "Albertosaurus",
+        "Price": 40000
+    },
+    {
         "Dino": "Allosaurus",
         "Price": 35000
+    },
+    {
+        "Dino": "Ankylosaurus",
+        "Price": 35000
+    },
+    {
+        "Dino": "Austroraptor",
+        "Price": 5000
+    },
+    {
+        "Dino": "Avaceratops",
+        "Price": 5000
+    },
+    {
+        "Dino": "Baryonyx",
+        "Price": 15000
     },
     {
         "Dino": "Carnotaurus",
@@ -32,8 +56,16 @@
         "Price": 50000
     },
     {
+        "Dino": "Herrerasaurus",
+        "Price": 5000
+    },
+    {
         "Dino": "Maiasaura",
         "Price": 20000
+    },
+    {
+        "Dino": "Orodromeus",
+        "Price": 5000
     },
     {
         "Dino": "Pachycephalosaurus",
@@ -44,7 +76,27 @@
         "Price": 20000
     },
     {
+        "Dino": "Psittacosaurus",
+        "Price": 5000
+    },
+    {
+        "Dino": "Shantungosaurus",
+        "Price": 60000
+    },
+    {
+        "Dino": "Spinosaurus",
+        "Price": 60000
+    },
+    {
+        "Dino": "Stegosaurus",
+        "Price": 35000
+    },
+    {
         "Dino": "Suchomimus",
+        "Price": 35000
+    },
+    {
+        "Dino": "Therizinosaurus",
         "Price": 35000
     },
     {
@@ -58,5 +110,9 @@
     {
         "Dino": "Utahraptor",
         "Price": 20000
+    },
+    {
+        "Dino": "Velociraptor",
+        "Price": 5000
     }
 ]

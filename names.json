@@ -65,36 +65,54 @@
     },
     {
         "Dino": "Acrocanthosaurus",
-        "Name": ""
+        "Name": "Acro"
     },
     {
         "Dino": "Albertosaurus",
-        "Name": ""
+        "Name": "Albert"
     },
     {
         "Dino": "Austroraptor",
-        "Name": ""
+        "Name": "Austro"
     },
     {
         "Dino": "Baryonyx",
-        "Name": ""
-    },{
+        "Name": "Bary"
+    },
+    {
         "Dino": "Herrerasaurus",
-        "Name": ""
-    },{
-        "Dino": "Velociraptor",
-        "Name": ""
-    },{
+        "Name": "Herrera"
+    },
+    {
         "Dino": "Ankylosaurus",
-        "Name": "Camarasaurus"
-    },{
+        "Name": "Anky"
+    },
+    {
         "Dino": "Therizinosaurus",
-        "Name": ""
-    },{
+        "Name": "Theri"
+    },
+    {
         "Dino": "Shantungosaurus",
-        "Name": ""
-    },{
+        "Name": "Shant"
+    },
+    {
         "Dino": "Stegosaurus",
-        "Name": ""
+        "Name": "Stego"
+    },
+    {
+        "Dino": "Velociraptor",
+        "Name": "Velo"
+    },
+    {
+        "Dino": "Orodromeus",
+        "Name": "Oro"
+    },
+    {
+        "Dino": "Avaceratops",
+        "Name": "Ava"
+    },
+    {
+        "Dino": "Psittacosaurus",
+        "Name": "Taco"
     }
 ]

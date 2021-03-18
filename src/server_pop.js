@@ -3,8 +3,7 @@ module.exports = async function (client, count) {
 
     async function updateCount () {
         if(count){
-            console.log(`Updating user count with value ... ${count}`);
-            client.user.setActivity(`${count} / 150 players.`, { type: 'WATCHING' });
+            client.user.setActivity(`${count} / 150 dinosaurs.`, { type: 'WATCHING' });
         }
     }
 
