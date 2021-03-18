@@ -164,7 +164,7 @@ client.on("message", async message => {
                     if(!price) {
                         return message.reply(`that dino cannot be injected.`);
                     }
-                    if(bank > price) {
+                    if(bank >= price) {
                         paymentMethod = "bank";
                         await ftpDownload(message, server, "inject");
                     } else if(cash >= price) {
@@ -193,7 +193,7 @@ client.on("message", async message => {
                             break;
                         }
                     }
-                    if(bank > price) {
+                    if(bank >= price) {
                         //Start ftp chain call
                         paymentMethod = "bank";
                         await ftpDownload(message, server, "grow");
@@ -258,7 +258,7 @@ client.on("message", async message => {
             if(!price) {
                 return message.reply(`that dino cannot be injected.`);
             }
-            if(bank > price) {
+            if(bank >= price) {
                 paymentMethod = "bank";
                 await ftpDownload(message, server, "inject");
             } else if(cash >= price) {
@@ -297,7 +297,7 @@ client.on("message", async message => {
                     break;
                 }
             }
-            if(bank > price) {
+            if(bank >= price) {
                 //Start ftp chain call
                 paymentMethod = "bank";
                 await ftpDownload(message, server, "grow");
