@@ -65,9 +65,10 @@ function serverCountLoop() {
     }, 5000);
 }
 
-//TODO: Implement this
-function cancelCheck(msg) {
+function cancelCheck(message, msg) {
+    if (msg === undefined) return true;
     if (msg.toLowerCase() === "cancel") {
+        message.reply("you cancelled the transaction.")
         return true;
     }
     return false;
@@ -93,42 +94,49 @@ client.on("message", async message => {
                 var command;
                 const filter = m => m.author.id === message.author.id;
                 const options = {
-                    max: 1
+                    max: 1,
+                    time: 30000,
+                    errors: ['time']
                 };
                 const questions = new Discord.MessageEmbed()
                     .setTitle('Buy Interactive Menu')
                     .setColor('#DAF7A6')
                     .addFields(
-                        {name: "Do you want to grow? Or do you want to inject?",
+                        {name: "Do you want to grow? Or do you want to inject?\n(Type cancel at any point to end process)",
                         value: "Please type either:\ngrow\ninject"}
                     );
                 //Send initial embed
                 message.reply(questions);
-                await message.channel.awaitMessages(filter, options).then((collected)=>{command = collected.first().content});
-                
+                await message.channel.awaitMessages(filter, options).then((collected)=>{command = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                if(cancelCheck(message, command)) return false;
+
                 //Remove current embed fields and replacing it as process goes along
                 questions.fields = [];
                 questions.addFields({name: "Which server?", value: "Please type either:\n1\n2"});
                 message.reply(questions);
-                await message.channel.awaitMessages(filter, options).then((collected)=>{server = collected.first().content});
+                await message.channel.awaitMessages(filter, options).then((collected)=>{server = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                if(cancelCheck(message, server)) return false;
 
                 if (command.toLowerCase() != "grow") {
                     questions.fields = [];
                     questions.addFields({name: "Male or female?", value: "Please type either:\nm\nf"});
                     message.reply(questions);
-                    await message.channel.awaitMessages(filter, options).then((collected)=>{gender = collected.first().content});
+                    await message.channel.awaitMessages(filter, options).then((collected)=>{gender = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                    if(cancelCheck(message, gender)) return false;
                 }
 
                 questions.fields = [];
                 questions.addFields({name: "Type the dinosaur you desire", value: "For example:\nUtah\nAllo\nDilo\nGalli\nTrike\n. . ."});
                 message.reply(questions);
-                await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content});
+                await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                if(cancelCheck(message, dinoName)) return false;
 
                 questions.fields = [];
                 if (command.toLowerCase() != "inject"){
                     questions.addFields({name: "Enter your steam ID", value: "Either click the 17 digit code next to your name in game to copy it and paste it here.\n\nOr go to Steam > View > Settings > Interface > Check 'Display web address bars when available' > Go to your profile. Your steam ID is the 17 digit code in the address bar."});
                     message.reply(questions);
-                    await message.channel.awaitMessages(filter, options).then((collected)=>{steamID = collected.first().content});
+                    await message.channel.awaitMessages(filter, options).then((collected)=>{steamID = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                    if(cancelCheck(message, steamId)) return false;
                 }
 
                 if (command.toLowerCase() === "inject") {
