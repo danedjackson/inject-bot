@@ -112,13 +112,15 @@ client.on("message", async message => {
                 message.reply(questions);
                 await message.channel.awaitMessages(filter, options).then((collected)=>{server = collected.first().content});
 
-                questions.fields = [];
-                questions.addFields({name: "Male or female?", value: "Please type either:\nm\nf"});
-                message.reply(questions);
-                await message.channel.awaitMessages(filter, options).then((collected)=>{gender = collected.first().content});
+                if (command.toLowerCase() != "grow") {
+                    questions.fields = [];
+                    questions.addFields({name: "Male or female?", value: "Please type either:\nm\nf"});
+                    message.reply(questions);
+                    await message.channel.awaitMessages(filter, options).then((collected)=>{gender = collected.first().content});
+                }
 
                 questions.fields = [];
-                questions.addFields({name: "Type the dinosaur you desire", value: "For example:\nUtah\nAllo"});
+                questions.addFields({name: "Type the dinosaur you desire", value: "For example:\nUtah\nAllo\nDilo\nGalli\nTrike\n. . ."});
                 message.reply(questions);
                 await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content});
 
@@ -128,6 +130,7 @@ client.on("message", async message => {
                     message.reply(questions);
                     await message.channel.awaitMessages(filter, options).then((collected)=>{steamID = collected.first().content});
                 }
+
                 if (command.toLowerCase() === "inject") {
                     if (await getSteamID(message.author.id) == false) return message.reply(`in order to use inject, you must link your steam ID\nuse ~link [steam ID here]`);
                     steamID = await getSteamID(message.author.id);
