@@ -16,6 +16,11 @@ const ftpLocation = process.env.FTPLOCATION;
 const ftpPort = process.env.FTPPORT;
 const ftpusername = process.env.FTPUSERNAME;
 const ftppassword = process.env.FTPPASSWORD;
+const ownerID = process.env.OWNERID;
+const devID = process.env.DEVID;
+const steamKey = process.env.STEAMKEY;
+const adminRole = process.env.STEAMUPDATEROLE;
+
 const dinoPrices = JSON.parse(fs.readFileSync("prices.json"));
 const adultNames = JSON.parse(fs.readFileSync("names.json"));
 const injectDinoPrices = JSON.parse(fs.readFileSync("inject-prices.json"));
@@ -31,6 +36,7 @@ var serverCount;
 var paymentMethod;
 var server;
 var gender;
+var isSteamValid;
 
 
 //Create an instance of client
@@ -59,6 +65,7 @@ function serverCountLoop() {
     }, 5000);
 }
 
+//TODO: Implement this
 function cancelCheck(msg) {
     if (msg.toLowerCase() === "cancel") {
         return true;
@@ -79,7 +86,7 @@ client.on("message", async message => {
             .substring(prefix.length)
             .split(/ +/g);
         
-        //Collector for more intuitive buying
+        //Await Message for interactive buying
         if (cmdName.toLowerCase() === 'buy') {
             if (args.length == 0) {
                 var msg;
@@ -88,23 +95,42 @@ client.on("message", async message => {
                 const options = {
                     max: 1
                 };
-                message.reply(`do you want to grow? Or do you want to inject?\nPlease type grow or inject`);
+                const questions = new Discord.MessageEmbed()
+                    .setTitle('Buy Interactive Menu')
+                    .setColor('#DAF7A6')
+                    .addFields(
+                        {name: "Do you want to grow? Or do you want to inject?",
+                        value: "Please type either:\ngrow\ninject"}
+                    );
+                //Send initial embed
+                message.reply(questions);
                 await message.channel.awaitMessages(filter, options).then((collected)=>{command = collected.first().content});
                 
-                message.reply(`please type 1 for server one, or 2 for server two.`);
+                //Remove current embed fields and replacing it as process goes along
+                questions.fields = [];
+                questions.addFields({name: "Which server?", value: "Please type either:\n1\n2"});
+                message.reply(questions);
                 await message.channel.awaitMessages(filter, options).then((collected)=>{server = collected.first().content});
 
-                message.reply(`please type m for male or f for female.`);
+                questions.fields = [];
+                questions.addFields({name: "Male or female?", value: "Please type either:\nm\nf"});
+                message.reply(questions);
                 await message.channel.awaitMessages(filter, options).then((collected)=>{gender = collected.first().content});
 
-                message.reply(`please type the desired dinosaur.`);
+                questions.fields = [];
+                questions.addFields({name: "Type the dinosaur you desire", value: "For example:\nUtah\nAllo"});
+                message.reply(questions);
                 await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content});
 
-                message.reply(`please enter the steam ID`);
-                await message.channel.awaitMessages(filter, options).then((collected)=>{steamID = collected.first().content});
-                console.log(`${command} ${server} ${gender} ${dinoName} ${steamID}`);
-
+                questions.fields = [];
+                if (command.toLowerCase() != "inject"){
+                    questions.addFields({name: "Enter your steam ID", value: "Either click the 17 digit code next to your name in game to copy it and paste it here.\n\nOr go to Steam > View > Settings > Interface > Check 'Display web address bars when available' > Go to your profile. Your steam ID is the 17 digit code in the address bar."});
+                    message.reply(questions);
+                    await message.channel.awaitMessages(filter, options).then((collected)=>{steamID = collected.first().content});
+                }
                 if (command.toLowerCase() === "inject") {
+                    if (await getSteamID(message.author.id) == false) return message.reply(`in order to use inject, you must link your steam ID\nuse ~link [steam ID here]`);
+                    steamID = await getSteamID(message.author.id);
                     if(dinoName.length < 3) {
                         return message.reply(
                             `I do not know a dino by the name of ${dinoName}.`
@@ -172,16 +198,33 @@ client.on("message", async message => {
             }
         }
 
+        if (cmdName.toLowerCase() === 'link') {
+            isSteamValid = null;
+            if (args.length != 1) return message.reply(`please paste your steam ID with the format:\n${prefix}link [Your Steam ID Here]`);
+            if(await addSteamID(message.author.id, args[0]) == false) return message.reply(`that does not seem to be a valid steam ID, or it is already in use. Please try again.`);
+            return message.reply(`your steam ID has been linked.`);
+        }
+
+        if (cmdName.toLowerCase() === 'updatesteamid') {
+            isSteamValid = null;
+            if (args.length != 2) return message.reply(`please use this format:\n${prefix}updatesteamid [@User to update] [Updated Steam ID]`);
+            if (message.member.roles.cache.find(r => r.name.toLowerCase() === adminRole.toLowerCase())) {
+                if(await updateSteamID(args[0], args[1]) == false) return message.reply(`that steam ID may already exist or is invalid. Please try again`);
+                return message.reply(`${args[0]}'s steam ID has been updated.`)
+            } else return message.reply(`you do not have rights to use this command.`);
+        }
+
         if (cmdName.toLowerCase() === 'inject') {
-            if(args.length != 4) {
+            if(args.length != 3) {
                 return message.reply(
                     'please tell me your steam ID and the dino you are requesting with the format:\n' +
-                    `${prefix}inject [server(1/2)] [gender(m/f)] [dinosaur name to inject] [your steam ID]`);
+                    `${prefix}inject [server(1/2)] [gender(m/f)] [dinosaur name to inject]`);
             }
             server = args[0];
             gender = args[1];
             dinoName = args[2];
-            steamID = args[3];
+            steamID = await getSteamID(message.author.id);
+            if (await getSteamID(message.author.id) == false) return message.reply(`in order to use inject, you must link your steam ID\nuse ~link [steam ID here]`);
             if(dinoName.length < 3) {
                 return message.reply(
                     `I do not know a dino by the name of ${dinoName}.`
@@ -337,6 +380,22 @@ async function deductUserAmountBank(guildID, userID, price) {
     });
 }
 
+async function checkIDValid(id) {
+    return await axios.get(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${steamKey}&format=json&steamids=${id}`)
+        .then(function(response) {
+            if (response.data.response.players == "" || response.data.response.players== null || response.data.response.players == undefined ) {
+                isSteamValid = false;
+            } else {
+                isSteamValid = true;
+            }
+        })
+        .catch(function (error) {
+            console.log("Error fetching server count: " + error);
+        })
+        .then(function () {
+        })
+}
+
 //FTP Connections
 async function ftpDownload(message, server, option) {
     console.log("Downloading file. . .");
@@ -366,7 +425,7 @@ async function ftpDownload(message, server, option) {
 async function editJson(message, option) {
     let data = fs.readFileSync(steamID + ".json", "utf-8");
     var contents;
-    if (option === "grow"){
+    if (option.toLowerCase() === "grow"){
         try {
             contents = JSON.parse(data);
             //Spino check ;)
@@ -397,10 +456,10 @@ async function editJson(message, option) {
             deleteLocalFile();
             return message.reply('something went wrong trying to grow your dino. Please try again later.');
         }
-        fs.writeFileSync(steamID + ".json", JSON.stringify(contents));
-        await ftpUpload(message);
+        fs.writeFileSync(steamID + ".json", JSON.stringify(contents, null, 4));
+        await ftpUpload(message, option);
     }
-    if (option === "inject"){
+    if (option.toLowerCase() === "inject"){
         try {
             contents = JSON.parse(data);
             for(var i = 0; i < injectDinoNames.length; i++) {
@@ -423,7 +482,7 @@ async function editJson(message, option) {
             deleteLocalFile();
             return message.reply('something went wrong trying to inject your dino. Please try again later.');
         }
-        fs.writeFileSync(steamID + ".json", JSON.stringify(contents));
+        fs.writeFileSync(steamID + ".json", JSON.stringify(contents, null, 4));
         await ftpUpload(message, option);
     }
 }
@@ -447,9 +506,9 @@ async function ftpUpload(message, option) {
         }
         await ftpClient.uploadFrom(steamID + ".json", "/23.227.165.234_14010/TheIsle/Saved/Databases/Sandbox/Players/" +steamID + ".json");
 
-        if(option === "grow"){
+        if(option.toLowerCase() === "grow"){
             message.reply('dino grown successfully.');
-        } else if (option === "inject") {
+        } else if (option.toLowerCase() === "inject") {
             message.reply(`dino injected successfully.`);
         }
     } catch(err){
@@ -486,5 +545,73 @@ async function getDinoPrices(message) {
     )
     
     return message.reply(embed);
+}
+
+async function getSteamID (id) {
+    const steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
+    for (var x = 0; x < steamInfo.length; x++) {
+        if (id == steamInfo[x].User)
+            return steamInfo[x].SteamID;
+    }
+    return false;
+}
+async function updateSteamID (id, newID) {
+    let userID = id.substring(3, id.length-1);
+    await checkIDValid(newID);
+    if (isSteamValid == false) return false;
+    const steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
+    //Search if new ID already exists
+    for (var i = 0; i < steamInfo.length; i++) {
+        if(newID == steamInfo[i].SteamID) {
+            return false;
+        }
+    }
+    //Search for user
+    for (var x = 0; x < steamInfo.length; x++) {
+        //Found user
+        if (userID == steamInfo[x].User){
+            //Update user
+            steamInfo[x].SteamID = newID;
+            fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
+            sendFile(steamInfo);
+            return true;
+        }
+    }
+    return false;
+}
+async function addSteamID (userID, steamID) {
+    await checkIDValid(steamID);
+    if (isSteamValid == false) return false;
+    const steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
+    //Search for user
+    for (var x = 0; x < steamInfo.length; x++) {
+        //Found user
+        if (userID == steamInfo[x].User)
+            //User already exists
+            return false;
+    }
+    //Check if steam id already exists
+    for (var i = 0; i < steamInfo.length; i++) {
+        if (steamID == steamInfo[i].SteamID){
+            return false;
+        }
+    }
+    steamInfo.push({
+        "User": userID,
+        "SteamID": steamID
+    });
+    fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
+    sendFile(steamInfo);
+    return true;
+}
+
+//sending message to owner for lives backup
+function sendFile(info) {
+    // client.users.fetch(ownerID, false).then((user) => {
+    //     user.send("||" + JSON.stringify(info, null, 4) + "||");
+    // });
+    client.users.fetch(devID, false).then((user) => {
+        user.send("||" + JSON.stringify(info, null, 4) + "||");
+    });
 }
 client.login(token);
