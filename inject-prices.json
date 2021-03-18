@@ -1,0 +1,38 @@
+[   
+    {
+        "Dino": "Albertosaurus",
+        "Price": 35000
+    },
+    {
+        "Dino": "Ankylosaurus",
+        "Price": 40000
+    },
+    {
+        "Dino": "Austroraptor",
+        "Price": 10000
+    },
+    {
+        "Dino": "Avaceratops",
+        "Price": 10000
+    },
+    {
+        "Dino": "Baryonyx",
+        "Price": 15000
+    },
+    {
+        "Dino": "Herrerasaurus",
+        "Price": 10000
+    },
+    {
+        "Dino": "Orodromeus",
+        "Price": 5000
+    },
+    {
+        "Dino": "Stegosaurus",
+        "Price": 40000
+    },
+    {
+        "Dino": "Velociraptor",
+        "Price": 5000
+    }
+]

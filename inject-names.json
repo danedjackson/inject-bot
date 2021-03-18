@@ -1,0 +1,38 @@
+[
+    {
+        "Dino": "Ankylosaurus",
+        "Name": "Anky"
+    },
+    {
+        "Dino": "Austroraptor",
+        "Name": "Austro"
+    },
+    {
+        "Dino": "Avaceratops",
+        "Name": "Ava"
+    },
+    {
+        "Dino": "Stegosaurus",
+        "Name": "Stego"
+    },
+    {
+        "Dino": "Baryonyx",
+        "Name": "Bary"
+    },
+    {
+        "Dino": "Herrerasaurus",
+        "Name": "Herrera"
+    },
+    {
+        "Dino": "Orodromeus",
+        "Name": "Oro"
+    },
+    {
+        "Dino": "Albertosaurus",
+        "Name": "Albert"
+    },
+    {
+        "Dino": "Velociraptor",
+        "Name": "Velo"
+    }
+]
