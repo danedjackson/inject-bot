@@ -106,35 +106,41 @@ client.on("message", async message => {
                     );
                 //Send initial embed
                 message.reply(questions);
+                var timedOut = false;
                 var safelogged;
-                await message.channel.awaitMessages(filter, options).then((collected)=>{safelogged = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
-                if (safelogged == undefined || safelogged == null || safelogged == "") return message.reply(`did not get a response, please try again.`)
+                await message.channel.awaitMessages(filter, options).then((collected)=>{safelogged = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
+                if (safelogged == undefined || safelogged == null || safelogged == "") return message.reply(`I did not get a response, please make sure you are safelogged before requesting any dino.`)
                 if (safelogged.toLowerCase() == "no" || safelogged.toLowerCase() == "n"){
                     return message.reply(`Please safelog before continuing.`);
                 }
+
+                if(timedOut) {return false;}
                 questions.fields = [];
                 questions.addFields({name: "Do you want to grow? Or do you want to inject?\n(Type cancel at any point to end process)",
                                     value: "Please type either:\ngrow\ninject"}
                                     );
                 message.reply(questions);
-                await message.channel.awaitMessages(filter, options).then((collected)=>{command = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                await message.channel.awaitMessages(filter, options).then((collected)=>{command = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
                 if(cancelCheck(message, command)) return false;
 
                 //Remove current embed fields and replacing it as process goes along
+                if(timedOut) {return false;}
                 questions.fields = [];
                 questions.addFields({name: "Which server?", value: "Please type either 1 or 2:\n1 - New Beginnings [High AI]\n2 - New Beginnings [High AI #2]"});
                 message.reply(questions);
-                await message.channel.awaitMessages(filter, options).then((collected)=>{server = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                await message.channel.awaitMessages(filter, options).then((collected)=>{server = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
                 if(cancelCheck(message, server)) return false;
 
                 if (command.toLowerCase() != "grow") {
+                    if(timedOut) {return false;}
                     questions.fields = [];
                     questions.addFields({name: "Male or female?", value: "Please type either:\nm\nf"});
                     message.reply(questions);
-                    await message.channel.awaitMessages(filter, options).then((collected)=>{gender = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                    await message.channel.awaitMessages(filter, options).then((collected)=>{gender = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
                     if(cancelCheck(message, gender)) return false;
                 }
                 if (command.toLowerCase() == "inject"){
+                    if(timedOut) {return false;}
                     questions.fields = [];
                     var msg = "";
                     for (var x = 0; x < injectDinoPrices.length; x++) {
@@ -142,10 +148,11 @@ client.on("message", async message => {
                     }
                     questions.addFields({name: "Type the name of the dinosaur you desire", value: msg});
                     message.reply(questions);
-                    await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                    await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
                     if(cancelCheck(message, dinoName)) return false;
                 }
                 if (command.toLowerCase() == "grow"){
+                    if(timedOut) {return false;}
                     questions.fields = [];
                     var msg = "";
                     for (var x = 0; x < dinoPrices.length; x++) {
@@ -155,26 +162,33 @@ client.on("message", async message => {
                     }
                     questions.addFields({name: "Type the name of the dinosaur you desire", value: msg});
                     message.reply(questions);
-                    await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                    await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
                     if(cancelCheck(message, dinoName)) return false;
                 }
+
+                if(timedOut) {return false;}
                 questions.fields = [];
                 if (command.toLowerCase() != "inject"){
                     questions.addFields({name: "Enter your steam ID", value: "Either click the 17 digit code next to your name in game to copy it and paste it here.\n\nOr go to Steam > View > Settings > Interface > Check 'Display web address bars when available' > Go to your profile. Your steam ID is the 17 digit code in the address bar."});
                     message.reply(questions);
-                    await message.channel.awaitMessages(filter, options).then((collected)=>{steamID = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                    await message.channel.awaitMessages(filter, options).then((collected)=>{steamID = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
                     if(cancelCheck(message, steamID)) return false;
                 }
 
                 var confirm;
+
+                if(timedOut) {return false;}
                 questions.fields = [];
                 questions.addFields({name: "Confirm?", value: "type either:\nyes\nno"});
                 message.reply(questions)
-                await message.channel.awaitMessages(filter, options).then((collected)=>{confirm = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                await message.channel.awaitMessages(filter, options).then((collected)=>{confirm = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
+                if(timedOut) {return false;}
                 if (confirm.toLowerCase() == "no" || confirm.toLowerCase() == "n") {
                     return message.reply(`you cancelled this request.`);
                 }
 
+                console.log(timedOut);
+                if(timedOut) {return false;}
                 questions.fields = [];
                 questions.setTitle("Please wait . . .");
                 message.reply(questions);
