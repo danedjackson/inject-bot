@@ -101,10 +101,20 @@ client.on("message", async message => {
                     .setTitle('Buy Interactive Menu')
                     .setColor('#DAF7A6')
                     .addFields(
-                        {name: "Do you want to grow? Or do you want to inject?\n(Type cancel at any point to end process)",
-                        value: "Please type either:\ngrow\ninject"}
+                        {name: "Are you safelogged?",
+                        value: "Please type either:\nyes\nno"}
                     );
                 //Send initial embed
+                message.reply(questions);
+                var safelogged;
+                await message.channel.awaitMessages(filter, options).then((collected)=>{safelogged = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                if (safelogged.toLowerCase() == "no" || safelogged.toLowerCase() == "n"){
+                    return message.reply(`Please safelog before continuing.`);
+                }
+                questions.fields = [];
+                questions.addFields({name: "Do you want to grow? Or do you want to inject?\n(Type cancel at any point to end process)",
+                                    value: "Please type either:\ngrow\ninject"}
+                                    );
                 message.reply(questions);
                 await message.channel.awaitMessages(filter, options).then((collected)=>{command = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
                 if(cancelCheck(message, command)) return false;
@@ -123,19 +133,45 @@ client.on("message", async message => {
                     await message.channel.awaitMessages(filter, options).then((collected)=>{gender = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
                     if(cancelCheck(message, gender)) return false;
                 }
-
-                questions.fields = [];
-                questions.addFields({name: "Type the dinosaur you desire", value: "For example:\nUtah\nAllo\nDilo\nGalli\nTrike\n. . ."});
-                message.reply(questions);
-                await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
-                if(cancelCheck(message, dinoName)) return false;
-
+                if (command.toLowerCase() == "inject"){
+                    questions.fields = [];
+                    var msg = "";
+                    for (var x = 0; x < injectDinoPrices.length; x++) {
+                        msg += `${injectDinoPrices[x].ShortName}: $${injectDinoPrices[x].Price.toLocaleString()}\n`;
+                    }
+                    questions.addFields({name: "Type the name of the dinosaur you desire", value: msg});
+                    message.reply(questions);
+                    await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                    if(cancelCheck(message, dinoName)) return false;
+                }
+                if (command.toLowerCase() == "grow"){
+                    questions.fields = [];
+                    var msg = "";
+                    for (var x = 0; x < dinoPrices.length; x++) {
+                        if(dinoPrices[x].Type == 'S'){
+                            msg += `${dinoPrices[x].ShortName}: $${dinoPrices[x].Price.toLocaleString()}\n`;
+                        }
+                    }
+                    questions.addFields({name: "Type the name of the dinosaur you desire", value: msg});
+                    message.reply(questions);
+                    await message.channel.awaitMessages(filter, options).then((collected)=>{dinoName = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                    if(cancelCheck(message, dinoName)) return false;
+                }
                 questions.fields = [];
                 if (command.toLowerCase() != "inject"){
                     questions.addFields({name: "Enter your steam ID", value: "Either click the 17 digit code next to your name in game to copy it and paste it here.\n\nOr go to Steam > View > Settings > Interface > Check 'Display web address bars when available' > Go to your profile. Your steam ID is the 17 digit code in the address bar."});
                     message.reply(questions);
                     await message.channel.awaitMessages(filter, options).then((collected)=>{steamID = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
                     if(cancelCheck(message, steamID)) return false;
+                }
+
+                var confirm;
+                questions.fields = [];
+                questions.addFields({name: "Confirm?", value: "type either:\nyes\nno"});
+                message.reply(questions)
+                await message.channel.awaitMessages(filter, options).then((collected)=>{confirm = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                if (confirm.toLowerCase() == "no" || confirm.toLowerCase() == "n") {
+                    return message.reply(`you cancelled this request.`);
                 }
 
                 questions.fields = [];
@@ -150,12 +186,14 @@ client.on("message", async message => {
                             `I do not know a dino by the name of ${dinoName}.`
                         );
                     }
+                    //Trike check
+                    if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
                     await getUserAmount(message.guild.id, message.author.id);
                     price = null;
         
                     for (var x = 0; x < injectDinoPrices.length; x++) {
                         if(injectDinoPrices[x].Dino.toLowerCase()
-                                        .indexOf(dinoName.toLowerCase()) !== -1) {
+                                        .indexOf(dinoName.toLowerCase()) != -1) {
                             price = parseInt(injectDinoPrices[x].Price);
                             break;
                         }
@@ -181,6 +219,8 @@ client.on("message", async message => {
                             `I do not know a dino by the name of ${dinoName}.`
                         );
                     }
+                    //Trike check
+                    if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
                     //waits for axios to finish its call to assign cash and bank values.
                     await getUserAmount(message.guild.id, message.author.id);
                     price = null;
@@ -188,7 +228,7 @@ client.on("message", async message => {
                     //Getting price of dinosaur from json object.
                     for (var x = 0; x < dinoPrices.length; x++){
                         if (dinoPrices[x].Dino.toLowerCase()
-                                        .indexOf(dinoName.toLowerCase()) !== -1){
+                                        .indexOf(dinoName.toLowerCase()) != -1){
                             price = parseInt(dinoPrices[x].Price);
                             break;
                         }
@@ -244,12 +284,14 @@ client.on("message", async message => {
                     `I do not know a dino by the name of ${dinoName}.`
                 );
             }
+            //Trike check
+            if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
             await getUserAmount(message.guild.id, message.author.id);
             price = null;
 
             for (var x = 0; x < injectDinoPrices.length; x++) {
                 if(injectDinoPrices[x].Dino.toLowerCase()
-                                .indexOf(dinoName.toLowerCase()) !== -1) {
+                                .indexOf(dinoName.toLowerCase()) != -1) {
                     price = parseInt(injectDinoPrices[x].Price);
                     break;
                 }
@@ -285,6 +327,8 @@ client.on("message", async message => {
                     `I do not know a dino by the name of ${dinoName}.`
                 );
             }
+            //Trike check
+            if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
             //waits for axios to finish its call to assign cash and bank values.
             await getUserAmount(message.guild.id, message.author.id);
             price = null;
@@ -292,7 +336,7 @@ client.on("message", async message => {
             //Getting price of dinosaur from json object.
             for (var x = 0; x < dinoPrices.length; x++){
                 if (dinoPrices[x].Dino.toLowerCase()
-                                .indexOf(dinoName.toLowerCase()) !== -1){
+                                .indexOf(dinoName.toLowerCase()) != -1){
                     price = parseInt(dinoPrices[x].Price);
                     break;
                 }
@@ -447,9 +491,13 @@ async function editJson(message, option) {
                 deleteLocalFile();
                 return message.reply(`Spinosaurus has to be male to receive a grow.`);
             }
+            //Switch trike name for this check
+            if(dinoName.toLowerCase() == "triceratops") dinoName = "trike";
             if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) != -1 
                     || dinoName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) != -1){
+                //"cera" gets mistaken for Triceratops, and "Trike" is what is compared on the file.
                 if(dinoName.toLowerCase() === 'cera') dinoName = 'ceratosaurus';
+                if(dinoName.toLowerCase() === 'trike') dinoName = 'Triceratops';
                 //Change the value of juvi to Adult from the list of adult names defined
                 for(var i = 0; i < adultNames.length; i++) {
                     if(adultNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
@@ -512,6 +560,7 @@ async function ftpUpload(message, option) {
             user: ftpusername,
             password: ftppassword
         });
+        if(!price) return message.reply(`something went wrong, please try again later.`);
         if(paymentMethod.indexOf("cash") != -1) {
             await deductUserAmountCash(message.guild.id, message.author.id, price);
         } 

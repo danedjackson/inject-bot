@@ -1,38 +1,47 @@
 [   
     {
         "Dino": "Albertosaurus",
+        "ShortName": "Albert",
         "Price": 35000
     },
     {
         "Dino": "Ankylosaurus",
+        "ShortName": "Anky",
         "Price": 40000
     },
     {
         "Dino": "Austroraptor",
+        "ShortName": "Austro",
         "Price": 10000
     },
     {
         "Dino": "Avaceratops",
-        "Price": 10000
+        "ShortName": "Ava",
+        "Price": 5000
     },
     {
         "Dino": "Baryonyx",
+        "ShortName": "Bary",
         "Price": 15000
     },
     {
         "Dino": "Herrerasaurus",
+        "ShortName": "Herrera",
         "Price": 10000
     },
     {
         "Dino": "Orodromeus",
+        "ShortName": "Oro",
         "Price": 5000
     },
     {
         "Dino": "Stegosaurus",
+        "ShortName": "Stego",
         "Price": 40000
     },
     {
         "Dino": "Velociraptor",
+        "ShortName": "Velo",
         "Price": 5000
     }
 ]

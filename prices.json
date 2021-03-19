@@ -1,118 +1,175 @@
 [    
     {
         "Dino": "Acrocanthosaurus",
-        "Price": 35000
+        "ShortName": "Acro",
+        "Price": 35000,
+        "Type": "N"
     },
     {
         "Dino": "Albertosaurus",
-        "Price": 40000
+        "ShortName": "Albert",
+        "Price": 40000,
+        "Type": "N"
     },
     {
         "Dino": "Allosaurus",
-        "Price": 35000
+        "ShortName": "Allo",
+        "Price": 35000,
+        "Type": "S"
     },
     {
         "Dino": "Ankylosaurus",
-        "Price": 35000
+        "ShortName": "Anky",
+        "Price": 35000,
+        "Type": "N"
     },
     {
         "Dino": "Austroraptor",
-        "Price": 5000
+        "ShortName": "Austro",
+        "Price": 5000,
+        "Type": "N"
     },
     {
         "Dino": "Avaceratops",
-        "Price": 5000
+        "ShortName": "Ava",
+        "Price": 5000,
+        "Type": "N"
     },
     {
         "Dino": "Baryonyx",
-        "Price": 15000
+        "ShortName": "Bary",
+        "Price": 15000,
+        "Type": "N"
     },
     {
         "Dino": "Carnotaurus",
-        "Price": 20000
+        "ShortName": "Carno",
+        "Price": 20000,
+        "Type": "S"
     },
     {
         "Dino": "Ceratosaurus",
-        "Price": 20000
+        "ShortName": "Cera",
+        "Price": 20000,
+        "Type": "S"
     },
     {
         "Dino": "Diabloceratops",
-        "Price": 20000
+        "ShortName": "Diablo",
+        "Price": 20000,
+        "Type": "S"
     },
     {
         "Dino": "Dilophosaurus",
-        "Price": 20000
+        "ShortName": "Dilo",
+        "Price": 20000,
+        "Type": "S"
     },
     {
         "Dino": "Dryosaurous",
-        "Price": 10000
+        "ShortName": "Dryo",
+        "Price": 10000,
+        "Type": "S"
     },
     {
         "Dino": "Gallimimus",
-        "Price": 20000
+        "ShortName": "Galli",
+        "Price": 20000,
+        "Type": "S"
     },
     {
         "Dino": "Giganotosaurus",
-        "Price": 50000
+        "ShortName": "Giga",
+        "Price": 50000,
+        "Type": "S"
     },
     {
         "Dino": "Herrerasaurus",
+        "ShortName": "Herrera",
         "Price": 5000
     },
     {
         "Dino": "Maiasaura",
-        "Price": 20000
+        "ShortName": "Maia",
+        "Price": 20000,
+        "Type": "S"
     },
     {
         "Dino": "Orodromeus",
-        "Price": 5000
+        "ShortName": "Oro",
+        "Price": 5000,
+        "Type": "N"
     },
     {
         "Dino": "Pachycephalosaurus",
-        "Price": 20000
+        "ShortName": "Pachy",
+        "Price": 20000,
+        "Type": "S"
     },
     {
         "Dino": "Parasaurolophus",
-        "Price": 20000
+        "ShortName": "Para",
+        "Price": 20000,
+        "Type": "S"
     },
     {
         "Dino": "Psittacosaurus",
-        "Price": 5000
+        "ShortName": "Taco",
+        "Price": 5000,
+        "Type": "N"
     },
     {
         "Dino": "Shantungosaurus",
-        "Price": 60000
+        "ShortName": "Shant",
+        "Price": 60000,
+        "Type": "N"
     },
     {
         "Dino": "Spinosaurus",
-        "Price": 60000
+        "ShortName": "Spino",
+        "Price": 60000,
+        "Type": "N"
     },
     {
         "Dino": "Stegosaurus",
-        "Price": 35000
+        "ShortName": "Stego",
+        "Price": 35000,
+        "Type": "N"
     },
     {
         "Dino": "Suchomimus",
-        "Price": 35000
+        "ShortName": "Sucho",
+        "Price": 35000,
+        "Type": "S"
     },
     {
         "Dino": "Therizinosaurus",
-        "Price": 35000
+        "ShortName": "Theri",
+        "Price": 35000,
+        "Type": "N"
     },
     {
         "Dino": "Triceratops",
-        "Price": 50000
+        "ShortName": "Trike",
+        "Price": 50000,
+        "Type": "S"
     },
     {
         "Dino": "Tyrannosaurus Rex",
-        "Price": 60000
+        "ShortName": "Rex",
+        "Price": 60000,
+        "Type": "S"
     },
     {
         "Dino": "Utahraptor",
-        "Price": 20000
+        "ShortName": "Utah",
+        "Price": 20000,
+        "Type": "S"
     },
     {
         "Dino": "Velociraptor",
-        "Price": 5000
+        "ShortName": "Velo",
+        "Price": 5000,
+        "Type": "N"
     }
 ]
