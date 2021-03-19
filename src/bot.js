@@ -121,7 +121,7 @@ client.on("message", async message => {
 
                 //Remove current embed fields and replacing it as process goes along
                 questions.fields = [];
-                questions.addFields({name: "Which server?", value: "Please type either:\n1\n2"});
+                questions.addFields({name: "Which server?", value: "Please type either 1 or 2:\n1 - New Beginnings [High AI]\n2 - New Beginnings [High AI #2]"});
                 message.reply(questions);
                 await message.channel.awaitMessages(filter, options).then((collected)=>{server = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
                 if(cancelCheck(message, server)) return false;
