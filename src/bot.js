@@ -95,7 +95,7 @@ client.on("message", async message => {
                 const filter = m => m.author.id === message.author.id;
                 const options = {
                     max: 1,
-                    time: 300000
+                    time: 5000
                 };
                 const questions = new Discord.MessageEmbed()
                     .setTitle('Buy Interactive Menu')
@@ -108,10 +108,9 @@ client.on("message", async message => {
                 message.reply(questions);
                 var timedOut = false;
                 var safelogged;
-                await message.channel.awaitMessages(filter, options).then((collected)=>{safelogged = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
-                if (safelogged == undefined || safelogged == null || safelogged == "") return message.reply(`I did not get a response, please make sure you are safelogged before requesting any dino.`)
-                if (safelogged.toLowerCase() == "no" || safelogged.toLowerCase() == "n"){
-                    return message.reply(`Please safelog before continuing.`);
+                await message.channel.awaitMessages(filter, options).then((collected)=>{safelogged = collected.first().content}).catch(collected => {return timedOut = true;});
+                if (safelogged == undefined || safelogged == null || safelogged == "" || safelogged.toLowerCase() == "no" || safelogged.toLowerCase() == "n"){
+                    return message.reply(`please safelog before continuing.`);
                 }
 
                 if(timedOut) {return false;}
@@ -186,8 +185,7 @@ client.on("message", async message => {
                 if (confirm.toLowerCase() == "no" || confirm.toLowerCase() == "n") {
                     return message.reply(`you cancelled this request.`);
                 }
-
-                console.log(timedOut);
+                
                 if(timedOut) {return false;}
                 questions.fields = [];
                 questions.setTitle("Please wait . . .");
