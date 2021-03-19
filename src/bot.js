@@ -66,8 +66,8 @@ function serverCountLoop() {
 }
 
 function cancelCheck(message, msg) {
-    if (msg === undefined) return true;
-    if (msg.toLowerCase() === "cancel") {
+    if (msg === undefined || msg == null || msg == "") return true;
+    if (msg.toLowerCase().indexOf("cancel") != -1) {
         message.reply("you cancelled the transaction.")
         return true;
     }
@@ -108,6 +108,7 @@ client.on("message", async message => {
                 message.reply(questions);
                 var safelogged;
                 await message.channel.awaitMessages(filter, options).then((collected)=>{safelogged = collected.first().content}).catch(collected => {return message.reply(`time ran out. Please try again`)});
+                if (safelogged == undefined || safelogged == null || safelogged == "") return message.reply(`did not get a response, please try again.`)
                 if (safelogged.toLowerCase() == "no" || safelogged.toLowerCase() == "n"){
                     return message.reply(`Please safelog before continuing.`);
                 }
