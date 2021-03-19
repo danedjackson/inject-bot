@@ -3,173 +3,150 @@
         "Dino": "Acrocanthosaurus",
         "ShortName": "Acro",
         "Price": 35000,
-        "Type": "N"
-    },
-    {
-        "Dino": "Albertosaurus",
-        "ShortName": "Albert",
-        "Price": 40000,
-        "Type": "N"
+        "Growable": "Y"
     },
     {
         "Dino": "Allosaurus",
         "ShortName": "Allo",
         "Price": 35000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Ankylosaurus",
         "ShortName": "Anky",
         "Price": 35000,
-        "Type": "N"
+        "Growable": "Y"
     },
     {
         "Dino": "Austroraptor",
         "ShortName": "Austro",
-        "Price": 5000,
-        "Type": "N"
+        "Price": 10000,
+        "Growable": "Y"
     },
     {
         "Dino": "Avaceratops",
         "ShortName": "Ava",
         "Price": 5000,
-        "Type": "N"
+        "Growable": "Y"
     },
     {
         "Dino": "Baryonyx",
         "ShortName": "Bary",
         "Price": 15000,
-        "Type": "N"
+        "Growable": "Y"
     },
     {
         "Dino": "Carnotaurus",
         "ShortName": "Carno",
         "Price": 20000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Ceratosaurus",
         "ShortName": "Cera",
         "Price": 20000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Diabloceratops",
         "ShortName": "Diablo",
         "Price": 20000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Dilophosaurus",
         "ShortName": "Dilo",
         "Price": 20000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Dryosaurous",
         "ShortName": "Dryo",
         "Price": 10000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Gallimimus",
         "ShortName": "Galli",
         "Price": 20000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Giganotosaurus",
         "ShortName": "Giga",
         "Price": 50000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Herrerasaurus",
         "ShortName": "Herrera",
-        "Price": 5000
+        "Price": 10000,
+        "Growable": "Y"
     },
     {
         "Dino": "Maiasaura",
         "ShortName": "Maia",
         "Price": 20000,
-        "Type": "S"
-    },
-    {
-        "Dino": "Orodromeus",
-        "ShortName": "Oro",
-        "Price": 5000,
-        "Type": "N"
+        "Growable": "Y"
     },
     {
         "Dino": "Pachycephalosaurus",
         "ShortName": "Pachy",
         "Price": 20000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Parasaurolophus",
         "ShortName": "Para",
         "Price": 20000,
-        "Type": "S"
-    },
-    {
-        "Dino": "Psittacosaurus",
-        "ShortName": "Taco",
-        "Price": 5000,
-        "Type": "N"
+        "Growable": "Y"
     },
     {
         "Dino": "Shantungosaurus",
         "ShortName": "Shant",
         "Price": 60000,
-        "Type": "N"
+        "Growable": "Y"
     },
     {
         "Dino": "Spinosaurus",
         "ShortName": "Spino",
         "Price": 60000,
-        "Type": "N"
+        "Growable": "Y"
     },
     {
         "Dino": "Stegosaurus",
         "ShortName": "Stego",
         "Price": 35000,
-        "Type": "N"
+        "Growable": "Y"
     },
     {
         "Dino": "Suchomimus",
         "ShortName": "Sucho",
         "Price": 35000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Therizinosaurus",
         "ShortName": "Theri",
         "Price": 35000,
-        "Type": "N"
+        "Growable": "Y"
     },
     {
         "Dino": "Triceratops",
         "ShortName": "Trike",
         "Price": 50000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Tyrannosaurus Rex",
         "ShortName": "Rex",
         "Price": 60000,
-        "Type": "S"
+        "Growable": "Y"
     },
     {
         "Dino": "Utahraptor",
         "ShortName": "Utah",
         "Price": 20000,
-        "Type": "S"
-    },
-    {
-        "Dino": "Velociraptor",
-        "ShortName": "Velo",
-        "Price": 5000,
-        "Type": "N"
+        "Growable": "Y"
     }
 ]

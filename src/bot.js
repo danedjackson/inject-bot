@@ -95,7 +95,7 @@ client.on("message", async message => {
                 const filter = m => m.author.id === message.author.id;
                 const options = {
                     max: 1,
-                    time: 30000
+                    time: 300000
                 };
                 const questions = new Discord.MessageEmbed()
                     .setTitle('Buy Interactive Menu')
@@ -148,7 +148,7 @@ client.on("message", async message => {
                     questions.fields = [];
                     var msg = "";
                     for (var x = 0; x < dinoPrices.length; x++) {
-                        if(dinoPrices[x].Type == 'S'){
+                        if(dinoPrices[x].Growable.toLowerCase() == "y") {
                             msg += `${dinoPrices[x].ShortName}: $${dinoPrices[x].Price.toLocaleString()}\n`;
                         }
                     }
