@@ -95,7 +95,7 @@ client.on("message", async message => {
                 const filter = m => m.author.id === message.author.id;
                 const options = {
                     max: 1,
-                    time: 5000
+                    time: 300000
                 };
                 const questions = new Discord.MessageEmbed()
                     .setTitle('Buy Interactive Menu')
@@ -185,7 +185,7 @@ client.on("message", async message => {
                 if (confirm.toLowerCase() == "no" || confirm.toLowerCase() == "n") {
                     return message.reply(`you cancelled this request.`);
                 }
-                
+
                 if(timedOut) {return false;}
                 questions.fields = [];
                 questions.setTitle("Please wait . . .");
