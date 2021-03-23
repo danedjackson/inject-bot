@@ -37,7 +37,7 @@ var paymentMethod;
 var server;
 var gender;
 var isSteamValid;
-
+var serverSelection;
 
 //Create an instance of client
 const client = new Discord.Client();
@@ -486,6 +486,8 @@ async function checkIDValid(id) {
 
 //FTP Connections
 async function ftpDownload(message, server, option) {
+    if(server === "1") serverSelection = "/23.227.165.234_14010/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "2") serverSelection = "";
     console.log("Downloading file. . .");
     //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
@@ -497,14 +499,8 @@ async function ftpDownload(message, server, option) {
             password: ftppassword
         });
         //server checks
-        if (server == 1){
-            await ftpClient.downloadTo(steamID + ".json", "/23.227.165.234_14010/TheIsle/Saved/Databases/Sandbox/Players/"  + steamID + ".json");
-        } 
-        if (server == 2) {
-            
-        }else {
-            return message.reply(`type either 1 or 2 for server selection.`)
-        }
+        await ftpClient.downloadTo(steamID + ".json", serverSelection + steamID + ".json");
+
     } catch(err){
         console.error("Error downloading file: " + err.message);
         return message.reply('something went wrong trying to grow your dino.\nDid you enter the correct steam ID? Or do you have a dinosaur on the server?');
@@ -583,6 +579,8 @@ async function editJson(message, option) {
 }
 
 async function ftpUpload(message, option) {
+    if(server === "1") serverSelection = "/23.227.165.234_14010/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "2") serverSelection = "";
     console.log("Uploading file. . .");
     //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
@@ -600,14 +598,7 @@ async function ftpUpload(message, option) {
         if(paymentMethod.indexOf("bank") != -1) {
             await deductUserAmountBank(message.guild.id, message.author.id, price);
         }
-        if(server == 1) {
-            await ftpClient.uploadFrom(steamID + ".json", "/23.227.165.234_14010/TheIsle/Saved/Databases/Sandbox/Players/" +steamID + ".json");
-        }
-        if(server == 2) {
-
-        }else {
-            return message.reply(`type either 1 or 2 for server selection.`)
-        }
+        await ftpClient.uploadFrom(steamID + ".json", serverSelection+steamID + ".json");
         if(option.toLowerCase() === "grow"){
             message.reply('dino grown successfully.');
         } else if (option.toLowerCase() === "inject") {
