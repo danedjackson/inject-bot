@@ -499,7 +499,10 @@ async function ftpDownload(message, server, option) {
         //server checks
         if (server == 1){
             await ftpClient.downloadTo(steamID + ".json", "/23.227.165.234_14010/TheIsle/Saved/Databases/Sandbox/Players/"  + steamID + ".json");
-        } else {
+        } 
+        if (server == 2) {
+            
+        }else {
             return message.reply(`type either 1 or 2 for server selection.`)
         }
     } catch(err){
@@ -597,8 +600,14 @@ async function ftpUpload(message, option) {
         if(paymentMethod.indexOf("bank") != -1) {
             await deductUserAmountBank(message.guild.id, message.author.id, price);
         }
-        await ftpClient.uploadFrom(steamID + ".json", "/23.227.165.234_14010/TheIsle/Saved/Databases/Sandbox/Players/" +steamID + ".json");
+        if(server == 1) {
+            await ftpClient.uploadFrom(steamID + ".json", "/23.227.165.234_14010/TheIsle/Saved/Databases/Sandbox/Players/" +steamID + ".json");
+        }
+        if(server == 2) {
 
+        }else {
+            return message.reply(`type either 1 or 2 for server selection.`)
+        }
         if(option.toLowerCase() === "grow"){
             message.reply('dino grown successfully.');
         } else if (option.toLowerCase() === "inject") {
