@@ -12,8 +12,9 @@ const updateCount = require('./server_pop.js');
 
 const token = process.env.BOT_TOKEN;
 const prefix = process.env.PREFIX;
-const ftpLocation = process.env.FTPLOCATION;
+const ftpServer1 = process.env.FTPLOCATION;
 const ftpPort = process.env.FTPPORT;
+var ftpLocation = ftpServer1;
 const ftpusername = process.env.FTPUSERNAME;
 const ftppassword = process.env.FTPPASSWORD;
 const ownerID = process.env.OWNERID;
@@ -486,8 +487,11 @@ async function checkIDValid(id) {
 
 //FTP Connections
 async function ftpDownload(message, server, option) {
-    if(server === "1") serverSelection = "/23.227.165.234_14010/TheIsle/Saved/Databases/Sandbox/Players/";
-    if(server === "2") serverSelection = "";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "2"){
+        ftpLocation = "100.100.100.100";
+        serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
+    } 
     console.log("Downloading file. . .");
     //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
@@ -579,8 +583,11 @@ async function editJson(message, option) {
 }
 
 async function ftpUpload(message, option) {
-    if(server === "1") serverSelection = "/23.227.165.234_14010/TheIsle/Saved/Databases/Sandbox/Players/";
-    if(server === "2") serverSelection = "";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "2"){
+        ftpLocation = "100.100.100.100";
+        serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
+    } 
     console.log("Uploading file. . .");
     //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
