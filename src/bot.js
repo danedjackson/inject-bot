@@ -668,7 +668,7 @@ async function updateSteamID (id, newID) {
             //Update user
             steamInfo[x].SteamID = newID;
             fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
-            sendFile(steamInfo);
+            await sendFile(steamInfo);
             return true;
         }
     }
@@ -696,12 +696,26 @@ async function addSteamID (userID, steamID) {
         "SteamID": steamID
     });
     fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
-    sendFile(steamInfo);
+    await sendFile(steamInfo);
     return true;
 }
 
 //sending message to owner for lives backup
-function sendFile(info) {
+async function sendFile(info) {
+    ftpClient.ftp.ipFamily = 4;
+    try {
+        await ftpClient.access({
+            host: ftpLocation,
+            port: ftpPort,
+            user: ftpusername,
+            password: ftppassword
+        });
+        await ftpClient.uploadFrom("steam-id.json", "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/steam-id.json");
+    } catch(err){
+        console.error("Error uploading steam-id JSON file: " + err.message);
+    }
+    ftpClient.close();
+
     // client.users.fetch(ownerID, false).then((user) => {
     //     user.send("||" + JSON.stringify(info, null, 4) + "||");
     // });
