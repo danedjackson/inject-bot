@@ -103,7 +103,8 @@ client.on("message", async message => {
                     .addFields(
                         {name: "Are you safelogged?",
                         value: "Please type either:\nyes\nno"}
-                    );
+                    )
+                    .setFooter(`User order: ${message.author.username}`);
                 //Send initial embed
                 message.reply(questions);
                 var timedOut = false;
@@ -111,6 +112,9 @@ client.on("message", async message => {
                 await message.channel.awaitMessages(filter, options).then((collected)=>{safelogged = collected.first().content}).catch(collected => {return timedOut = true;});
                 if (safelogged == undefined || safelogged == null || safelogged == "" || safelogged.toLowerCase() == "no" || safelogged.toLowerCase() == "n"){
                     return message.reply(`please safelog before continuing.`);
+                }
+                if (safelogged.toLowerCase().localeCompare("yes") !== 0 && safelogged.toLowerCase().localeCompare("y") !== 0){
+                    return message.reply(`please enter yes or no.`);                    
                 }
 
                 if(timedOut) {return false;}
@@ -121,6 +125,9 @@ client.on("message", async message => {
                 message.reply(questions);
                 await message.channel.awaitMessages(filter, options).then((collected)=>{command = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
                 if(cancelCheck(message, command)) return false;
+                if(command.toLowerCase().localeCompare("grow") !== 0 && command.toLowerCase().localeCompare("inject") !== 0) {
+                    return message.reply(`please type either "grow" or "inject".`);
+                }
 
                 //Remove current embed fields and replacing it as process goes along
                 if(timedOut) {return false;}
@@ -129,6 +136,9 @@ client.on("message", async message => {
                 message.reply(questions);
                 await message.channel.awaitMessages(filter, options).then((collected)=>{server = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
                 if(cancelCheck(message, server)) return false;
+                if(server.localeCompare("1") === -1 && server.localeCompare("2") === -1) {
+                    return message.reply(`please type either 1 or 2.`);
+                }
 
                 if (command.toLowerCase() != "grow") {
                     if(timedOut) {return false;}
@@ -137,6 +147,10 @@ client.on("message", async message => {
                     message.reply(questions);
                     await message.channel.awaitMessages(filter, options).then((collected)=>{gender = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
                     if(cancelCheck(message, gender)) return false;
+                    if(gender.toLowerCase().localeCompare("m") !== 0 && gender.toLowerCase().localeCompare("f") !== 0 
+                            && gender.toLowerCase().localeCompare("female") !== 0 && gender.toLowerCase().localeCompare("male") !== 0) {
+                        return message.reply(`please type either m or f.`);
+                    }
                 }
                 if (command.toLowerCase() == "inject"){
                     if(timedOut) {return false;}
@@ -184,6 +198,9 @@ client.on("message", async message => {
                 if(timedOut) {return false;}
                 if (confirm.toLowerCase() == "no" || confirm.toLowerCase() == "n") {
                     return message.reply(`you cancelled this request.`);
+                }
+                if(confirm.toLowerCase().localeCompare("yes") !== 0 && confirm.toLowerCase().localeCompare("y") !== 0) {
+                    return message.reply(`please enter yes or no.`);
                 }
 
                 if(timedOut) {return false;}
