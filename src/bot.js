@@ -487,8 +487,8 @@ async function checkIDValid(id) {
 //FTP Connections
 async function ftpDownload(message, server, option) {
     //server checks
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
-    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
 
     console.log("Downloading file. . .");
     //ftpClient.ftp.verbose = true;
@@ -580,8 +580,8 @@ async function editJson(message, option) {
 }
 
 async function ftpUpload(message, option) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
-    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
 
     console.log("Uploading file. . .");
     //ftpClient.ftp.verbose = true;
