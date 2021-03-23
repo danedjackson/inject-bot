@@ -12,9 +12,8 @@ const updateCount = require('./server_pop.js');
 
 const token = process.env.BOT_TOKEN;
 const prefix = process.env.PREFIX;
-const ftpServer1 = process.env.FTPLOCATION;
+const ftpLocation = process.env.FTPLOCATION;
 const ftpPort = process.env.FTPPORT;
-var ftpLocation = ftpServer1;
 const ftpusername = process.env.FTPUSERNAME;
 const ftppassword = process.env.FTPPASSWORD;
 const ownerID = process.env.OWNERID;
@@ -302,7 +301,7 @@ client.on("message", async message => {
         if (cmdName.toLowerCase() === 'inject') {
             if(args.length != 3) {
                 return message.reply(
-                    'please tell me your steam ID and the dino you are requesting with the format:\n' +
+                    'please tell me the dino you are requesting with the format:\n' +
                     `${prefix}inject [server(1/2)] [gender(m/f)] [dinosaur name to inject]`);
             }
             server = args[0];
@@ -487,11 +486,10 @@ async function checkIDValid(id) {
 
 //FTP Connections
 async function ftpDownload(message, server, option) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
-    if(server === "2"){
-        ftpLocation = "100.100.100.100";
-        serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
-    } 
+    //server checks
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Sandbox/Players/";
+
     console.log("Downloading file. . .");
     //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
@@ -502,7 +500,6 @@ async function ftpDownload(message, server, option) {
             user: ftpusername,
             password: ftppassword
         });
-        //server checks
         await ftpClient.downloadTo(steamID + ".json", serverSelection + steamID + ".json");
 
     } catch(err){
@@ -583,11 +580,9 @@ async function editJson(message, option) {
 }
 
 async function ftpUpload(message, option) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
-    if(server === "2"){
-        ftpLocation = "100.100.100.100";
-        serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
-    } 
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Sandbox/Players/";
+
     console.log("Uploading file. . .");
     //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
