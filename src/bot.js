@@ -487,7 +487,7 @@ async function checkIDValid(id) {
 //FTP Connections
 async function ftpDownload(message, server, option) {
     //server checks
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Sandbox/Players/";
 
     console.log("Downloading file. . .");
@@ -528,6 +528,12 @@ async function editJson(message, option) {
                 //"cera" gets mistaken for Triceratops, and "Trike" is what is compared on the file.
                 if(dinoName.toLowerCase() === 'cera') dinoName = 'ceratosaurus';
                 if(dinoName.toLowerCase() === 'trike') dinoName = 'Triceratops';
+
+                //Check if the pleb's bleeding or has broken leg
+                if(contents.bBrokenLegs === true || contents.BleedingRate.localeCompare("0") !== 0) {
+                    return message.reply(`your dino is either bleeding or has a broken leg. Try again when the leg is healed or when you have stopped bleeding.`);
+                }
+
                 //Change the value of juvi to Adult from the list of adult names defined
                 for(var i = 0; i < adultNames.length; i++) {
                     if(adultNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
@@ -554,6 +560,12 @@ async function editJson(message, option) {
     if (option.toLowerCase() === "inject"){
         try {
             contents = JSON.parse(data);
+
+            //Check if the pleb's bleeding or has broken leg
+            if(contents.bBrokenLegs === true || contents.BleedingRate.localeCompare("0") !== 0) {
+                return message.reply(`your dino is either bleeding or has a broken leg. Try again when the leg is healed or when you have stopped bleeding.`);
+            }
+
             for(var i = 0; i < injectDinoNames.length; i++) {
                 if(injectDinoNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
                     contents.CharacterClass = injectDinoNames[i].Name;
@@ -580,7 +592,7 @@ async function editJson(message, option) {
 }
 
 async function ftpUpload(message, option) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Sandbox/Players/";
 
     console.log("Uploading file. . .");
@@ -710,7 +722,7 @@ async function sendFile(info) {
             user: ftpusername,
             password: ftppassword
         });
-        await ftpClient.uploadFrom("steam-id.json", "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/steam-id.json");
+        await ftpClient.uploadFrom("steam-id.json", "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/steam-id.json");
     } catch(err){
         console.error("Error uploading steam-id JSON file: " + err.message);
     }

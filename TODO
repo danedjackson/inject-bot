@@ -1,0 +1,5 @@
+1. Get steam-id file from server on startup.
+
+2. Add correct message if the user already has a steam ID linked and tries to add another.
+
+3. Add a way for a steam ID to be removed and not just updated.
