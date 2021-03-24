@@ -3,7 +3,7 @@ module.exports = async function (client, count) {
 
     async function updateCount () {
         if(count){
-            client.user.setActivity(`New Beginnings#1${count} / 150 dinosaurs.`, { type: 'WATCHING' });
+            client.user.setActivity(`N.B. Server #1 ${count} / 150 dinosaurs.`, { type: 'WATCHING' });
         }
     }
 
