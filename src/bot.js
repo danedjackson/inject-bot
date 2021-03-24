@@ -722,7 +722,7 @@ async function sendFile(info) {
             user: ftpusername,
             password: ftppassword
         });
-        await ftpClient.uploadFrom("steam-id.json", "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/steam-id.json");
+        await ftpClient.uploadFrom("steam-id.json", "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/steam-id.json");
     } catch(err){
         console.error("Error uploading steam-id JSON file: " + err.message);
     }
