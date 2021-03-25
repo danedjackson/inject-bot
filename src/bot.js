@@ -74,7 +74,7 @@ function cancelCheck(message, msg) {
     return false;
 }
 
-serverCountLoop();
+// serverCountLoop();
 
 client.on("message", async message => {
     if (message.author.bot) return
