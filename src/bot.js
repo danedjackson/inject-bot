@@ -540,6 +540,16 @@ async function editJson(message, option) {
                         contents.CharacterClass = adultNames[i].Name;
                     }
                 }
+                //Adding 0.5 to Z axis
+                var locationParts;
+                locationParts = contents.Location_Isle_V3.split("Z=", 2);
+                locationParts[1] = parseFloat(locationParts[1]);
+                locationParts[1] += 0.9;
+                locationParts[0] += "Z=";
+                locationParts[1] = locationParts[1].toString();
+                var completed = locationParts[0] + locationParts[1];
+
+                contents.Location_Isle_V3 = completed;
                 contents.Growth = "1.0";
                 contents.Hunger = "9999";
                 contents.Thirst = "9999";
@@ -571,6 +581,16 @@ async function editJson(message, option) {
                     contents.CharacterClass = injectDinoNames[i].Name;
                 }
             }
+            //Adding 0.5 to Z axis
+            var locationParts;
+            locationParts = contents.Location_Isle_V3.split("Z=", 2);
+            locationParts[1] = parseFloat(locationParts[1]);
+            locationParts[1] += 0.9;
+            locationParts[0] += "Z=";
+            locationParts[1] = locationParts[1].toString();
+            var completed = locationParts[0] + locationParts[1];
+     
+            contents.Location_Isle_V3 = completed;
             contents.Growth = "1.0";
             contents.Hunger = "9999";
             contents.Thirst = "9999";
