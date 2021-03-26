@@ -311,16 +311,17 @@ client.on("message", async message => {
             if (!permCheck) {
                 return message.reply(`you do not have the permissions to use this command.`);
             }
-            if(args.length != 3) {
+            if(args.length != 4) {
                 return message.reply(
                     'please tell me the dino you are requesting with the format:\n' +
-                    `${prefix}inject [server(1/2)] [gender(m/f)] [dinosaur name to inject]`);
+                    `${prefix}inject [server(1/2)] [gender(m/f)] [dinosaur name to inject] [steam ID]`);
             }
             server = args[0];
             gender = args[1];
             dinoName = args[2];
-            steamID = await getSteamID(message.author.id);
-            if (await getSteamID(message.author.id) == false) return message.reply(`in order to use inject, you must link your steam ID\nuse ~link [steam ID here]`);
+            steamID = args[3];
+            // steamID = await getSteamID(message.author.id);
+            // if (await getSteamID(message.author.id) == false) return message.reply(`in order to use inject, you must link your steam ID\nuse ~link [steam ID here]`);
             if(dinoName.length < 3) {
                 return message.reply(
                     `I do not know a dino by the name of ${dinoName}.`
@@ -328,31 +329,7 @@ client.on("message", async message => {
             }
             //Trike check
             if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
-            // await getUserAmount(message.guild.id, message.author.id);
-            // price = null;
-
-            // for (var x = 0; x < injectDinoPrices.length; x++) {
-            //     if(injectDinoPrices[x].Dino.toLowerCase()
-            //                     .indexOf(dinoName.toLowerCase()) != -1) {
-            //         price = parseInt(injectDinoPrices[x].Price);
-            //         break;
-            //     }
-            // }
             
-            // if(!price) {
-            //     return message.reply(`that dino cannot be injected.`);
-            // }
-            // if(bank >= price) {
-            //     paymentMethod = "bank";
-            //     await ftpDownload(message, server, "inject");
-            // } else if(cash >= price) {
-            //     paymentMethod = "cash";
-            //     await ftpDownload(message, server, "inject");
-            // } else if (cash <= price && bank < price) {
-            //     return message.reply('you do not have enough points for this dino.');
-            // } else {
-            //     return message.reply(`I'm having trouble growing that dino.`);
-            // }
             await ftpDownload(message, server, "inject");
         }
 
@@ -382,30 +359,7 @@ client.on("message", async message => {
             }
             //Trike check
             if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
-            // //waits for axios to finish its call to assign cash and bank values.
-            // await getUserAmount(message.guild.id, message.author.id);
-            // price = null;
 
-            // //Getting price of dinosaur from json object.
-            // for (var x = 0; x < dinoPrices.length; x++){
-            //     if (dinoPrices[x].Dino.toLowerCase()
-            //                     .indexOf(dinoName.toLowerCase()) != -1){
-            //         price = parseInt(dinoPrices[x].Price);
-            //         break;
-            //     }
-            // }
-            // if(bank >= price) {
-            //     //Start ftp chain call
-            //     paymentMethod = "bank";
-            //     await ftpDownload(message, server, "grow");
-            // } else if(cash >= price) {
-            //     paymentMethod = "cash";
-            //     await ftpDownload(message, server, "grow");
-            // } else if (cash <= price && bank < price) {
-            //     return message.reply('you do not have enough points for this dino.');
-            // } else {
-            //     return message.reply(`I'm having trouble growing that dino.`);
-            // }
             await ftpDownload(message, server, "grow");
         } 
 
