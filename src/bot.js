@@ -568,6 +568,7 @@ async function editJson(message, option) {
 
             for(var i = 0; i < injectDinoNames.length; i++) {
                 if(injectDinoNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
+                    console.log(`My dino: ${contents.CharacterClass} | Inject as: ${injectDinoNames[i].Name}`);
                     contents.CharacterClass = injectDinoNames[i].Name;
                 }
             }
