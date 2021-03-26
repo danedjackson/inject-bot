@@ -218,6 +218,7 @@ client.on("message", async message => {
                         break;
                     } 
                 }
+                console.log(`isBuy: ${isBuy} | permCheck: ${permCheck}`);
                 if (command.toLowerCase() === "inject") {
                     if (await getSteamID(message.author.id) == false) return message.reply(`in order to use inject, you must link your steam ID\nuse ~link [steam ID here]`);
                     steamID = await getSteamID(message.author.id);
