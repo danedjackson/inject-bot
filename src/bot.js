@@ -636,8 +636,8 @@ async function ftpUpload(message, option) {
             if(paymentMethod.indexOf("bank") != -1) {
                 await deductUserAmountBank(message.guild.id, message.author.id, price);
             }
-            await ftpClient.uploadFrom(steamID + ".json", serverSelection+steamID + ".json");
         }
+        await ftpClient.uploadFrom(steamID + ".json", serverSelection+steamID + ".json");
         if(option.toLowerCase() === "grow"){
             message.reply('dino grown successfully.');
         } else if (option.toLowerCase() === "inject") {
