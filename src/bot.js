@@ -40,6 +40,7 @@ var gender;
 var isSteamValid;
 var serverSelection;
 var permCheck = false;
+var isBuy = false;
 
 //Create an instance of client
 const client = new Discord.Client();
@@ -210,6 +211,7 @@ client.on("message", async message => {
                 questions.setTitle("Please wait . . .");
                 message.reply(questions);
 
+                isBuy = true;
                 if (command.toLowerCase() === "inject") {
                     if (await getSteamID(message.author.id) == false) return message.reply(`in order to use inject, you must link your steam ID\nuse ~link [steam ID here]`);
                     steamID = await getSteamID(message.author.id);
@@ -629,6 +631,15 @@ async function ftpUpload(message, option) {
             password: ftppassword
         });
         if(!permCheck){
+            if(!price) return message.reply(`something went wrong, please try again later.`);
+            if(paymentMethod.indexOf("cash") != -1) {
+                await deductUserAmountCash(message.guild.id, message.author.id, price);
+            } 
+            if(paymentMethod.indexOf("bank") != -1) {
+                await deductUserAmountBank(message.guild.id, message.author.id, price);
+            }
+        }
+        if(isBuy && permCheck) {
             if(!price) return message.reply(`something went wrong, please try again later.`);
             if(paymentMethod.indexOf("cash") != -1) {
                 await deductUserAmountCash(message.guild.id, message.author.id, price);
