@@ -25,6 +25,7 @@ const dinoPrices = JSON.parse(fs.readFileSync("prices.json"));
 const adultNames = JSON.parse(fs.readFileSync("names.json"));
 const injectDinoPrices = JSON.parse(fs.readFileSync("inject-prices.json"));
 const injectDinoNames = JSON.parse(fs.readFileSync("inject-names.json"));
+const adminUsers = JSON.parse(fs.readFileSync("free_id.json"));
 
 var app = express();
 var steamID;
@@ -38,6 +39,7 @@ var server;
 var gender;
 var isSteamValid;
 var serverSelection;
+var permCheck = false;
 
 //Create an instance of client
 const client = new Discord.Client();
@@ -299,6 +301,16 @@ client.on("message", async message => {
         }
 
         if (cmdName.toLowerCase() === 'inject') {
+            permCheck = false;
+            for (var x = 0; x < adminUsers.length; x++) {
+                if (message.member.roles.cache.has(adminUsers[x].id)){
+                    permCheck = true;
+                    break;
+                } 
+            }
+            if (!permCheck) {
+                return message.reply(`you do not have the permissions to use this command.`);
+            }
             if(args.length != 3) {
                 return message.reply(
                     'please tell me the dino you are requesting with the format:\n' +
@@ -316,34 +328,45 @@ client.on("message", async message => {
             }
             //Trike check
             if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
-            await getUserAmount(message.guild.id, message.author.id);
-            price = null;
+            // await getUserAmount(message.guild.id, message.author.id);
+            // price = null;
 
-            for (var x = 0; x < injectDinoPrices.length; x++) {
-                if(injectDinoPrices[x].Dino.toLowerCase()
-                                .indexOf(dinoName.toLowerCase()) != -1) {
-                    price = parseInt(injectDinoPrices[x].Price);
-                    break;
-                }
-            }
+            // for (var x = 0; x < injectDinoPrices.length; x++) {
+            //     if(injectDinoPrices[x].Dino.toLowerCase()
+            //                     .indexOf(dinoName.toLowerCase()) != -1) {
+            //         price = parseInt(injectDinoPrices[x].Price);
+            //         break;
+            //     }
+            // }
             
-            if(!price) {
-                return message.reply(`that dino cannot be injected.`);
-            }
-            if(bank >= price) {
-                paymentMethod = "bank";
-                await ftpDownload(message, server, "inject");
-            } else if(cash >= price) {
-                paymentMethod = "cash";
-                await ftpDownload(message, server, "inject");
-            } else if (cash <= price && bank < price) {
-                return message.reply('you do not have enough points for this dino.');
-            } else {
-                return message.reply(`I'm having trouble growing that dino.`);
-            }
+            // if(!price) {
+            //     return message.reply(`that dino cannot be injected.`);
+            // }
+            // if(bank >= price) {
+            //     paymentMethod = "bank";
+            //     await ftpDownload(message, server, "inject");
+            // } else if(cash >= price) {
+            //     paymentMethod = "cash";
+            //     await ftpDownload(message, server, "inject");
+            // } else if (cash <= price && bank < price) {
+            //     return message.reply('you do not have enough points for this dino.');
+            // } else {
+            //     return message.reply(`I'm having trouble growing that dino.`);
+            // }
+            await ftpDownload(message, server, "inject");
         }
 
         if (cmdName.toLowerCase() === 'grow'){
+            permCheck = false;
+            for (var x = 0; x < adminUsers.length; x++) {
+                if (message.member.roles.cache.has(adminUsers[x].id)){
+                    permCheck = true;
+                    break;
+                } 
+            }
+            if (!permCheck) {
+                return message.reply(`you do not have the permissions to use this command.`);
+            }
             if(args.length != 3) {
                 return message.reply(
                     'please tell me your steam ID and the dino you are requesting with the format:\n' +
@@ -359,30 +382,31 @@ client.on("message", async message => {
             }
             //Trike check
             if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
-            //waits for axios to finish its call to assign cash and bank values.
-            await getUserAmount(message.guild.id, message.author.id);
-            price = null;
+            // //waits for axios to finish its call to assign cash and bank values.
+            // await getUserAmount(message.guild.id, message.author.id);
+            // price = null;
 
-            //Getting price of dinosaur from json object.
-            for (var x = 0; x < dinoPrices.length; x++){
-                if (dinoPrices[x].Dino.toLowerCase()
-                                .indexOf(dinoName.toLowerCase()) != -1){
-                    price = parseInt(dinoPrices[x].Price);
-                    break;
-                }
-            }
-            if(bank >= price) {
-                //Start ftp chain call
-                paymentMethod = "bank";
-                await ftpDownload(message, server, "grow");
-            } else if(cash >= price) {
-                paymentMethod = "cash";
-                await ftpDownload(message, server, "grow");
-            } else if (cash <= price && bank < price) {
-                return message.reply('you do not have enough points for this dino.');
-            } else {
-                return message.reply(`I'm having trouble growing that dino.`);
-            }
+            // //Getting price of dinosaur from json object.
+            // for (var x = 0; x < dinoPrices.length; x++){
+            //     if (dinoPrices[x].Dino.toLowerCase()
+            //                     .indexOf(dinoName.toLowerCase()) != -1){
+            //         price = parseInt(dinoPrices[x].Price);
+            //         break;
+            //     }
+            // }
+            // if(bank >= price) {
+            //     //Start ftp chain call
+            //     paymentMethod = "bank";
+            //     await ftpDownload(message, server, "grow");
+            // } else if(cash >= price) {
+            //     paymentMethod = "cash";
+            //     await ftpDownload(message, server, "grow");
+            // } else if (cash <= price && bank < price) {
+            //     return message.reply('you do not have enough points for this dino.');
+            // } else {
+            //     return message.reply(`I'm having trouble growing that dino.`);
+            // }
+            await ftpDownload(message, server, "grow");
         } 
 
         if (cmdName === 'price'){
@@ -649,14 +673,16 @@ async function ftpUpload(message, option) {
             user: ftpusername,
             password: ftppassword
         });
-        if(!price) return message.reply(`something went wrong, please try again later.`);
-        if(paymentMethod.indexOf("cash") != -1) {
-            await deductUserAmountCash(message.guild.id, message.author.id, price);
-        } 
-        if(paymentMethod.indexOf("bank") != -1) {
-            await deductUserAmountBank(message.guild.id, message.author.id, price);
+        if(!permCheck){
+            if(!price) return message.reply(`something went wrong, please try again later.`);
+            if(paymentMethod.indexOf("cash") != -1) {
+                await deductUserAmountCash(message.guild.id, message.author.id, price);
+            } 
+            if(paymentMethod.indexOf("bank") != -1) {
+                await deductUserAmountBank(message.guild.id, message.author.id, price);
+            }
+            await ftpClient.uploadFrom(steamID + ".json", serverSelection+steamID + ".json");
         }
-        await ftpClient.uploadFrom(steamID + ".json", serverSelection+steamID + ".json");
         if(option.toLowerCase() === "grow"){
             message.reply('dino grown successfully.');
         } else if (option.toLowerCase() === "inject") {
