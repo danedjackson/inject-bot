@@ -212,6 +212,12 @@ client.on("message", async message => {
                 message.reply(questions);
 
                 isBuy = true;
+                for (var x = 0; x < adminUsers.length; x++) {
+                    if (message.member.roles.cache.has(adminUsers[x].id)){
+                        permCheck = true;
+                        break;
+                    } 
+                }
                 if (command.toLowerCase() === "inject") {
                     if (await getSteamID(message.author.id) == false) return message.reply(`in order to use inject, you must link your steam ID\nuse ~link [steam ID here]`);
                     steamID = await getSteamID(message.author.id);
@@ -275,11 +281,17 @@ client.on("message", async message => {
                         paymentMethod = "cash";
                         await ftpDownload(message, server, "grow");
                     } else if (cash <= price && bank < price) {
+                        isBuy = false;
+                        permCheck = false;
                         return message.reply('you do not have enough points for this dino.');
                     } else {
+                        isBuy = false;
+                        permCheck = false;
                         return message.reply(`I'm having trouble growing that dino.`);
                     }
                 }
+                isBuy = false;
+                permCheck = false;
             }
             else {
                 message.reply(`please use ~buy`);
@@ -639,7 +651,8 @@ async function ftpUpload(message, option) {
                 await deductUserAmountBank(message.guild.id, message.author.id, price);
             }
         }
-        if(isBuy && permCheck) {
+        console.log(`isBuy: ${isBuy} | permCheck: ${permCheck}`);
+        if(isBuy === true && permCheck === true) {
             if(!price) return message.reply(`something went wrong, please try again later.`);
             if(paymentMethod.indexOf("cash") != -1) {
                 await deductUserAmountCash(message.guild.id, message.author.id, price);
