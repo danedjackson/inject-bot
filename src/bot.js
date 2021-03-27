@@ -44,7 +44,6 @@ var isBuy = false;
 
 //Create an instance of client
 const client = new Discord.Client();
-const ftpClient = new ftp.Client();
 
 //Keep Bot alive on Heruko
 const PORT = process.env.PORT || 3000;
@@ -482,7 +481,10 @@ async function ftpDownload(message, server, option) {
     //server checks
     if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
-
+    var fileId = steamID;
+    var dName = dinoName;
+    var pri = price;
+    let ftpClient = new ftp.Client();
     console.log("Downloading file. . .");
     //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
@@ -493,18 +495,18 @@ async function ftpDownload(message, server, option) {
             user: ftpusername,
             password: ftppassword
         });
-        await ftpClient.downloadTo(steamID + ".json", serverSelection + steamID + ".json");
+        await ftpClient.downloadTo(fileId + ".json", serverSelection + fileId + ".json");
 
     } catch(err){
         console.error("Error downloading file: " + err.message);
         return message.reply('something went wrong trying to grow your dino.\nDid you enter the correct steam ID? Or do you have a dinosaur on the server?');
     }
-    ftpClient.close();
-    await editJson(message, option);
+    // ftpClient.close();
+    await editJson(message, option, fileId, dName, pri);
 }
 
-async function editJson(message, option) {
-    let data = fs.readFileSync(steamID + ".json", "utf-8");
+async function editJson(message, option, fileId, dName, pri) {
+    let data = fs.readFileSync(fileId + ".json", "utf-8");
     var contents;
     if (option.toLowerCase() === "grow"){
         try {
@@ -515,21 +517,22 @@ async function editJson(message, option) {
                 return message.reply(`Spinosaurus has to be male to receive a grow.`);
             }
             //Switch trike name for this check
-            if(dinoName.toLowerCase() == "triceratops") dinoName = "trike";
-            if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) != -1 
-                    || dinoName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) != -1){
+            if(dName.toLowerCase() == "triceratops") dName = "trike";
+            if (contents.CharacterClass.toLowerCase().indexOf(dName.toLowerCase()) != -1 
+                    || dName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) != -1){
                 //"cera" gets mistaken for Triceratops, and "Trike" is what is compared on the file.
-                if(dinoName.toLowerCase() === 'cera') dinoName = 'ceratosaurus';
-                if(dinoName.toLowerCase() === 'trike') dinoName = 'Triceratops';
+                if(dName.toLowerCase() === 'cera') dName = 'ceratosaurus';
+                if(dName.toLowerCase() === 'trike') dName = 'Triceratops';
 
                 //Check if the pleb's bleeding or has broken leg
                 if(contents.bBrokenLegs === true || contents.BleedingRate.localeCompare("0") !== 0) {
+                    deleteLocalFile();
                     return message.reply(`your dino is either bleeding or has a broken leg. Try again when the leg is healed or when you have stopped bleeding.`);
                 }
 
                 //Change the value of juvi to Adult from the list of adult names defined
                 for(var i = 0; i < adultNames.length; i++) {
-                    if(adultNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
+                    if(adultNames[i].Dino.toLowerCase().indexOf(dName.toLowerCase()) != -1) {
                         contents.CharacterClass = adultNames[i].Name;
                     }
                 }
@@ -562,15 +565,16 @@ async function editJson(message, option) {
                 contents.Health = "15000";
             } else {
                 deleteLocalFile();
-                return message.reply(`you do not have a '${dinoName}' on the server.\nMake sure you have already created a dino, safelogged and checked the spelling.`);
+                return message.reply(`you do not have a '${dName}' on the server.\nMake sure you have already created a dino, safelogged and checked the spelling.`);
             }
         } catch (err) {
             console.error("Error editing local JSON: " + err);
             deleteLocalFile();
             return message.reply('something went wrong trying to grow your dino. Please try again later.');
         }
-        fs.writeFileSync(steamID + ".json", JSON.stringify(contents, null, 4));
-        await ftpUpload(message, option);
+        fs.writeFileSync(fileId + ".json", JSON.stringify(contents, null, 4));
+        console.log(`${pri},  ${price}`);
+        await ftpUpload(message, option, fileId, pri);
     }
     if (option.toLowerCase() === "inject"){
         try {
@@ -578,11 +582,12 @@ async function editJson(message, option) {
 
             //Check if the pleb's bleeding or has broken leg
             if(contents.bBrokenLegs === true || contents.BleedingRate.localeCompare("0") !== 0) {
+                deleteLocalFile();
                 return message.reply(`your dino is either bleeding or has a broken leg. Try again when the leg is healed or when you have stopped bleeding.`);
             }
 
             for(var i = 0; i < injectDinoNames.length; i++) {
-                if(injectDinoNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
+                if(injectDinoNames[i].Dino.toLowerCase().indexOf(dName.toLowerCase()) != -1) {
                     console.log(`My dino: ${contents.CharacterClass} | Inject as: ${injectDinoNames[i].Name}`);
                     contents.CharacterClass = injectDinoNames[i].Name;
                 }
@@ -624,15 +629,17 @@ async function editJson(message, option) {
             deleteLocalFile();
             return message.reply('something went wrong trying to inject your dino. Please try again later.');
         }
-        fs.writeFileSync(steamID + ".json", JSON.stringify(contents, null, 4));
-        await ftpUpload(message, option);
+        fs.writeFileSync(fileId + ".json", JSON.stringify(contents, null, 4));
+        console.log(`${pri},  ${price}`);
+        await ftpUpload(message, option, fileId, pri);
     }
 }
 
-async function ftpUpload(message, option) {
+async function ftpUpload(message, option, fileId, pri) {
     if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
 
+    let ftpClient = new ftp.Client();
     console.log("Uploading file. . .");
     //ftpClient.ftp.verbose = true;
     ftpClient.ftp.ipFamily = 4;
@@ -644,25 +651,24 @@ async function ftpUpload(message, option) {
             password: ftppassword
         });
         if(!permCheck){
-            if(!price) return message.reply(`something went wrong, please try again later.`);
+            if(!pri) return message.reply(`something went wrong, please try again later.`);
             if(paymentMethod.indexOf("cash") != -1) {
-                await deductUserAmountCash(message.guild.id, message.author.id, price);
+                await deductUserAmountCash(message.guild.id, message.author.id, pri);
             } 
             if(paymentMethod.indexOf("bank") != -1) {
-                await deductUserAmountBank(message.guild.id, message.author.id, price);
+                await deductUserAmountBank(message.guild.id, message.author.id, pri);
             }
         }
-        console.log(`isBuy: ${isBuy} | permCheck: ${permCheck}`);
         if(isBuy === true && permCheck === true) {
-            if(!price) return message.reply(`something went wrong, please try again later.`);
+            if(!pri) return message.reply(`something went wrong, please try again later.`);
             if(paymentMethod.indexOf("cash") != -1) {
-                await deductUserAmountCash(message.guild.id, message.author.id, price);
+                await deductUserAmountCash(message.guild.id, message.author.id, pri);
             } 
             if(paymentMethod.indexOf("bank") != -1) {
-                await deductUserAmountBank(message.guild.id, message.author.id, price);
+                await deductUserAmountBank(message.guild.id, message.author.id, pri);
             }
         }
-        await ftpClient.uploadFrom(steamID + ".json", serverSelection+steamID + ".json");
+        await ftpClient.uploadFrom(fileId + ".json", serverSelection+fileId + ".json");
         if(option.toLowerCase() === "grow"){
             message.reply('dino grown successfully.');
         } else if (option.toLowerCase() === "inject") {
@@ -672,14 +678,14 @@ async function ftpUpload(message, option) {
         console.error("Error uploading JSON file: " + err.message);
         return message.reply('something went wrong trying to grow your dino. Please try again later.');
     }
-    deleteLocalFile();
+    deleteLocalFile(fileId);
     ftpClient.close();
 }
 
-async function deleteLocalFile() {
+async function deleteLocalFile(fileId) {
     console.log("Deleting local files . . .");
-    fs.unlink("./" + steamID + ".json", (err) => {
-        if (err) throw err;
+    fs.unlink("./" + fileId + ".json", (err) => {
+        if (err) console.log(err);
     });
 }
 
