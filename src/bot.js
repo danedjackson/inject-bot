@@ -513,7 +513,7 @@ async function editJson(message, option, fileId, dName, pri) {
             contents = JSON.parse(data);
             //Spino check ;)
             if (contents.CharacterClass.toLowerCase().indexOf("spino") != -1 && contents.bGender == true) {
-                deleteLocalFile();
+                deleteLocalFile(fileId);
                 return message.reply(`Spinosaurus has to be male to receive a grow.`);
             }
             //Switch trike name for this check
@@ -526,7 +526,7 @@ async function editJson(message, option, fileId, dName, pri) {
 
                 //Check if the pleb's bleeding or has broken leg
                 if(contents.bBrokenLegs === true || contents.BleedingRate.localeCompare("0") !== 0) {
-                    deleteLocalFile();
+                    deleteLocalFile(fileId);
                     return message.reply(`your dino is either bleeding or has a broken leg. Try again when the leg is healed or when you have stopped bleeding.`);
                 }
 
@@ -564,12 +564,12 @@ async function editJson(message, option, fileId, dName, pri) {
                 contents.Stamina = "9999";
                 contents.Health = "15000";
             } else {
-                deleteLocalFile();
+                deleteLocalFile(fileId);
                 return message.reply(`you do not have a '${dName}' on the server.\nMake sure you have already created a dino, safelogged and checked the spelling.`);
             }
         } catch (err) {
             console.error("Error editing local JSON: " + err);
-            deleteLocalFile();
+            deleteLocalFile(fileId);
             return message.reply('something went wrong trying to grow your dino. Please try again later.');
         }
         fs.writeFileSync(fileId + ".json", JSON.stringify(contents, null, 4));
@@ -582,7 +582,7 @@ async function editJson(message, option, fileId, dName, pri) {
 
             //Check if the pleb's bleeding or has broken leg
             if(contents.bBrokenLegs === true || contents.BleedingRate.localeCompare("0") !== 0) {
-                deleteLocalFile();
+                deleteLocalFile(fileId);
                 return message.reply(`your dino is either bleeding or has a broken leg. Try again when the leg is healed or when you have stopped bleeding.`);
             }
 
@@ -626,7 +626,7 @@ async function editJson(message, option, fileId, dName, pri) {
             }
         } catch (err) {
             console.error("Error editing local JSON: " + err);
-            deleteLocalFile();
+            deleteLocalFile(fileId);
             return message.reply('something went wrong trying to inject your dino. Please try again later.');
         }
         fs.writeFileSync(fileId + ".json", JSON.stringify(contents, null, 4));
