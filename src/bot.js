@@ -59,14 +59,6 @@ client.on("ready", () => {
     client.user.setActivity('with babu Dibbles.');
 });
 
-function serverCountLoop() {
-    setTimeout(async function() {
-        await getServerCount();
-        await updateCount(client, serverCount);
-        serverCountLoop();
-    }, 5000);
-}
-
 function cancelCheck(message, msg) {
     if (msg === undefined || msg == null || msg == "") return true;
     if (msg.toLowerCase().indexOf("cancel") != -1) {
@@ -75,8 +67,6 @@ function cancelCheck(message, msg) {
     }
     return false;
 }
-
-// serverCountLoop();
 
 client.on("message", async message => {
     if (message.author.bot) return
@@ -770,6 +760,7 @@ async function addSteamID (userID, steamID) {
 
 //sending message to owner for lives backup
 async function sendFile(info) {
+    let ftpClient = new ftp.Client();
     ftpClient.ftp.ipFamily = 4;
     try {
         await ftpClient.access({
