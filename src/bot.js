@@ -778,8 +778,8 @@ async function sendFile(info) {
     // client.users.fetch(ownerID, false).then((user) => {
     //     user.send("||" + JSON.stringify(info, null, 4) + "||");
     // });
-    client.users.fetch(devID, false).then((user) => {
-        user.send("||" + JSON.stringify(info, null, 4) + "||");
-    });
+    // client.users.fetch(devID, false).then((user) => {
+    //     user.send("||" + JSON.stringify(info, null, 4) + "||");
+    // });
 }
 client.login(token);
