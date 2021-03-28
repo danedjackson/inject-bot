@@ -461,7 +461,7 @@ async function checkIDValid(id) {
 //FTP Connections
 async function ftpDownload(message, server, option, dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection) {
     //server checks
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
     var fileId = steamID;
     let ftpClient = new ftp.Client();
@@ -621,7 +621,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 }
 
 async function ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
 
     let ftpClient = new ftp.Client();
@@ -770,7 +770,7 @@ async function sendFile(info) {
             user: ftpusername,
             password: ftppassword
         });
-        await ftpClient.uploadFrom("steam-id.json", "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/steam-id.json");
+        await ftpClient.uploadFrom("steam-id.json", "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/steam-id.json");
     } catch(err){
         console.error("Error uploading steam-id JSON file: " + err.message);
     }
