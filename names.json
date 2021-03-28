@@ -28,6 +28,10 @@
         "Name": "RexAdultS"
     },
     {
+        "Dino": "SubRex",
+        "Name": "RexSubS"
+    },
+    {
         "Dino": "Giganotosaurus",
         "Name": "GigaAdultS"
     },
