@@ -635,11 +635,12 @@ async function ftpUpload(message, server, option, fileId, price, paymentMethod, 
             user: ftpusername,
             password: ftppassword
         });
-        if(!price) {
-            console.log(`${message.author.username} [${message.author.id}]: Error - no price defined for the requested dino.`);
-            return message.reply(`something went wrong, please try again later.`);
-        }
         if(!permCheck){
+            //This should be in bot if blocks since admins should pay for ~buy command
+            if(!price) {
+                console.log(`${message.author.username} [${message.author.id}]: Error - no price defined for the requested dino.`);
+                return message.reply(`something went wrong, please try again later.`);
+            }
             if(paymentMethod.indexOf("cash") != -1) {
                 await deductUserAmountCash(message.guild.id, message.author.id, price);
             } 
@@ -648,6 +649,11 @@ async function ftpUpload(message, server, option, fileId, price, paymentMethod, 
             }
         }
         if(isBuy === true && permCheck === true) {
+            //This should be in bot if blocks since admins should pay for ~buy command
+            if(!price) {
+                console.log(`${message.author.username} [${message.author.id}]: Error - no price defined for the requested dino.`);
+                return message.reply(`something went wrong, please try again later.`);
+            }
             if(paymentMethod.indexOf("cash") != -1) {
                 await deductUserAmountCash(message.guild.id, message.author.id, price);
             } 
