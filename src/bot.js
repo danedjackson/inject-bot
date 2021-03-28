@@ -461,8 +461,8 @@ async function checkIDValid(id) {
 //FTP Connections
 async function ftpDownload(message, server, option, dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection) {
     //server checks
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
-    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Sandbox/Players/";
     var fileId = steamID;
     let ftpClient = new ftp.Client();
     console.log("Downloading file. . .");
@@ -513,6 +513,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                 //Change the value of juvi to Adult from the list of adult names defined
                 for(var i = 0; i < adultNames.length; i++) {
                     if(adultNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
+                        console.log(`${message.author.username} [${message.author.id}] current Dino: ${contents.CharacterClass} | Requesting a grow (${adultNames[i].Name})`);
                         contents.CharacterClass = adultNames[i].Name;
                     }
                 }
@@ -545,11 +546,13 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                 contents.Health = "15000";
             } else {
                 deleteLocalFile(fileId);
+                console.log(`${message.author.username} [${message.author.id}]: Error - user may be trying to grow a dino which they do not have.`);
                 return message.reply(`you do not have a '${dinoName}' on the server.\nMake sure you have already created a dino, safelogged and checked the spelling.`);
             }
         } catch (err) {
             console.error("Error editing local JSON: " + err);
             deleteLocalFile(fileId);
+            console.log(`${message.author.username} [${message.author.id}]: Error - there was an issue making changes to the user's dino`);
             return message.reply('something went wrong trying to grow your dino. Please try again later.');
         }
         fs.writeFileSync(fileId + ".json", JSON.stringify(contents, null, 4));
@@ -567,7 +570,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 
             for(var i = 0; i < injectDinoNames.length; i++) {
                 if(injectDinoNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
-                    console.log(`My dino: ${contents.CharacterClass} | Inject as: ${injectDinoNames[i].Name}`);
+                    console.log(`${message.author.username} [${message.author.id}] current Dino: ${contents.CharacterClass} | Requesting an inject as: ${injectDinoNames[i].Name}`);
                     contents.CharacterClass = injectDinoNames[i].Name;
                 }
             }
@@ -606,6 +609,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
         } catch (err) {
             console.error("Error editing local JSON: " + err);
             deleteLocalFile(fileId);
+            console.log(`${message.author.username} [${message.author.id}]: Error - there was an issue making changes to the user's dino`);
             return message.reply('something went wrong trying to inject your dino. Please try again later.');
         }
         fs.writeFileSync(fileId + ".json", JSON.stringify(contents, null, 4));
@@ -614,8 +618,8 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 }
 
 async function ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
-    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Sandbox/Players/";
 
     let ftpClient = new ftp.Client();
     console.log("Uploading file. . .");
@@ -628,8 +632,11 @@ async function ftpUpload(message, server, option, fileId, price, paymentMethod, 
             user: ftpusername,
             password: ftppassword
         });
+        if(!price) {
+            console.log(`${message.author.username} [${message.author.id}]: Error - no price defined for the requested dino.`);
+            return message.reply(`something went wrong, please try again later.`);
+        }
         if(!permCheck){
-            if(!price) return message.reply(`something went wrong, please try again later.`);
             if(paymentMethod.indexOf("cash") != -1) {
                 await deductUserAmountCash(message.guild.id, message.author.id, price);
             } 
@@ -638,7 +645,6 @@ async function ftpUpload(message, server, option, fileId, price, paymentMethod, 
             }
         }
         if(isBuy === true && permCheck === true) {
-            if(!price) return message.reply(`something went wrong, please try again later.`);
             if(paymentMethod.indexOf("cash") != -1) {
                 await deductUserAmountCash(message.guild.id, message.author.id, price);
             } 
@@ -648,12 +654,16 @@ async function ftpUpload(message, server, option, fileId, price, paymentMethod, 
         }
         await ftpClient.uploadFrom(fileId + ".json", serverSelection+fileId + ".json");
         if(option.toLowerCase() === "grow"){
+            console.log(`${message.author.username} [${message.author.id}] grown successfully.`);
             message.reply('dino grown successfully.');
         } else if (option.toLowerCase() === "inject") {
+            console.log(`${message.author.username} [${message.author.id}] injected successfully.`);
             message.reply(`dino injected successfully.`);
         }
     } catch(err){
         console.error("Error uploading JSON file: " + err.message);
+        deleteLocalFile(fileId);
+        console.log(`${message.author.username} [${message.author.id}] had problems with this transaction.`);
         return message.reply('something went wrong trying to grow your dino. Please try again later.');
     }
     deleteLocalFile(fileId);
@@ -757,7 +767,7 @@ async function sendFile(info) {
             user: ftpusername,
             password: ftppassword
         });
-        await ftpClient.uploadFrom("steam-id.json", "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/steam-id.json");
+        await ftpClient.uploadFrom("steam-id.json", "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/steam-id.json");
     } catch(err){
         console.error("Error uploading steam-id JSON file: " + err.message);
     }
