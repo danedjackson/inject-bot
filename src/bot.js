@@ -224,7 +224,7 @@ client.on("message", async message => {
         
                     for (var x = 0; x < injectDinoPrices.length; x++) {
                         if(injectDinoPrices[x].Dino.toLowerCase()
-                                        .indexOf(dinoName.toLowerCase()) != -1) {
+                                        .indexOf(dinoName.toLowerCase().replace(" ", "").replace("-", "")) != -1) {
                             price = parseInt(injectDinoPrices[x].Price);
                             break;
                         }
@@ -261,7 +261,7 @@ client.on("message", async message => {
                     //Getting price of dinosaur from json object.
                     for (var x = 0; x < dinoPrices.length; x++){
                         if (dinoPrices[x].Dino.toLowerCase()
-                                        .indexOf(dinoName.toLowerCase()) != -1){
+                                        .indexOf(dinoName.toLowerCase().replace(" ", "").replace("-", "")) != -1){
                             price = parseInt(dinoPrices[x].Price);
                             break;
                         }
@@ -461,8 +461,8 @@ async function checkIDValid(id) {
 //FTP Connections
 async function ftpDownload(message, server, option, dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection) {
     //server checks
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
-    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
     var fileId = steamID;
     let ftpClient = new ftp.Client();
     console.log("Downloading file. . .");
@@ -499,7 +499,8 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
             //Switch trike name for this check
             if(dinoName.toLowerCase() == "triceratops") dinoName = "trike";
             if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) != -1 
-                    || dinoName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) != -1){
+                    || dinoName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) != -1
+                    || dinoName.toLowerCase().replace(" ", "").replace("-", "").indexOf("subrex") !== -1){
                 //"cera" gets mistaken for Triceratops, and "Trike" is what is compared on the file.
                 if(dinoName.toLowerCase() === 'cera') dinoName = 'ceratosaurus';
                 if(dinoName.toLowerCase() === 'trike') dinoName = 'Triceratops';
@@ -512,10 +513,12 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 
                 //Change the value of juvi to Adult from the list of adult names defined
                 for(var i = 0; i < adultNames.length; i++) {
-                    if(adultNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
+                    if(adultNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase().trim().replace(" ", "").replace("-", "")) != -1) {
                         console.log(`${message.author.username} [${message.author.id}] current Dino: ${contents.CharacterClass} | Requesting a grow (${adultNames[i].Name})`);
                         contents.CharacterClass = adultNames[i].Name;
+                        break;
                     }
+                    
                 }
                 //Adding 0.5 to Z axis
                 if (server === "1") {
@@ -618,8 +621,8 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 }
 
 async function ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
-    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
 
     let ftpClient = new ftp.Client();
     console.log("Uploading file. . .");

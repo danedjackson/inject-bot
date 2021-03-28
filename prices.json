@@ -144,6 +144,12 @@
         "Growable": "Y"
     },
     {
+        "Dino": "SubRex",
+        "ShortName": "SubRex",
+        "Price": 50000,
+        "Growable": "Y"
+    },
+    {
         "Dino": "Utahraptor",
         "ShortName": "Utah",
         "Price": 20000,
