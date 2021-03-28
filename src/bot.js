@@ -28,19 +28,7 @@ const injectDinoNames = JSON.parse(fs.readFileSync("inject-names.json"));
 const adminUsers = JSON.parse(fs.readFileSync("free_id.json"));
 
 var app = express();
-var steamID;
-var dinoName;
-var cash;
-var price;
-var bank;
-var serverCount;
-var paymentMethod;
-var server;
-var gender;
 var isSteamValid;
-var serverSelection;
-var permCheck = false;
-var isBuy = false;
 
 //Create an instance of client
 const client = new Discord.Client();
@@ -70,6 +58,18 @@ function cancelCheck(message, msg) {
 
 client.on("message", async message => {
     if (message.author.bot) return
+    
+    var dinoName;
+    var price;
+    var cash;
+    var bank;
+    var steamID;
+    var paymentMethod;
+    var server;
+    var gender;
+    var permCheck = false;
+    var isBuy = false;
+    var serverSelection;
 
     if (message.content.startsWith(prefix)) {
         // console.log(`${message.guild.id} | ${message.author.id} | ${message.author.tag}: ${message.content}`);
@@ -207,7 +207,6 @@ client.on("message", async message => {
                         break;
                     } 
                 }
-                console.log(`isBuy: ${isBuy} | permCheck: ${permCheck}`);
                 if (command.toLowerCase() === "inject") {
                     if (await getSteamID(message.author.id) == false) return message.reply(`in order to use inject, you must link your steam ID\nuse ~link [steam ID here]`);
                     steamID = await getSteamID(message.author.id);
@@ -218,7 +217,9 @@ client.on("message", async message => {
                     }
                     //Trike check
                     if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
-                    await getUserAmount(message.guild.id, message.author.id);
+                    let money = await getUserAmount(message.guild.id, message.author.id);
+                    bank = parseInt(money[0]);
+                    cash = parseInt(money[1]);
                     price = null;
         
                     for (var x = 0; x < injectDinoPrices.length; x++) {
@@ -234,10 +235,10 @@ client.on("message", async message => {
                     }
                     if(bank >= price) {
                         paymentMethod = "bank";
-                        await ftpDownload(message, server, "inject");
+                        await ftpDownload(message, server, "inject", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
                     } else if(cash >= price) {
                         paymentMethod = "cash";
-                        await ftpDownload(message, server, "inject");
+                        await ftpDownload(message, server, "inject", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
                     } else if (cash <= price && bank < price) {
                         return message.reply('you do not have enough points for this dino.');
                     } else {
@@ -252,7 +253,9 @@ client.on("message", async message => {
                     //Trike check
                     if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
                     //waits for axios to finish its call to assign cash and bank values.
-                    await getUserAmount(message.guild.id, message.author.id);
+                    let money = await getUserAmount(message.guild.id, message.author.id);
+                    bank = parseInt(money[0]);
+                    cash = parseInt(money[1]);
                     price = null;
         
                     //Getting price of dinosaur from json object.
@@ -266,10 +269,10 @@ client.on("message", async message => {
                     if(bank >= price) {
                         //Start ftp chain call
                         paymentMethod = "bank";
-                        await ftpDownload(message, server, "grow");
+                        await ftpDownload(message, server, "grow", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
                     } else if(cash >= price) {
                         paymentMethod = "cash";
-                        await ftpDownload(message, server, "grow");
+                        await ftpDownload(message, server, "grow", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
                     } else if (cash <= price && bank < price) {
                         isBuy = false;
                         permCheck = false;
@@ -334,7 +337,7 @@ client.on("message", async message => {
             //Trike check
             if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
             
-            await ftpDownload(message, server, "inject");
+            await ftpDownload(message, server, "inject", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
         }
 
         if (cmdName.toLowerCase() === 'grow'){
@@ -364,7 +367,7 @@ client.on("message", async message => {
             //Trike check
             if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
 
-            await ftpDownload(message, server, "grow");
+            await ftpDownload(message, server, "grow", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
         } 
 
         if (cmdName === 'price'){
@@ -374,18 +377,6 @@ client.on("message", async message => {
 });
 
 //APIs
-async function getServerCount() {
-    return await axios.get("https://server-count.herokuapp.com/serv-count")
-        .then(function (response){
-            serverCount = response.data;
-        })
-        .catch(function (error) {
-            console.log("Error fetching server count: " + error);
-        })
-        .then(function () {
-        })
-}
-
 async function getUserAmount(guildID, userID) {
     return await axios.get(process.env.MONEY_BOT_URL + "/guilds/" + guildID + "/users/" + userID, {
             headers: {
@@ -403,6 +394,7 @@ async function getUserAmount(guildID, userID) {
         })
         .then(function () {
             // always executed
+            return [bank, cash];
         }
     );
 }
@@ -467,13 +459,11 @@ async function checkIDValid(id) {
 }
 
 //FTP Connections
-async function ftpDownload(message, server, option) {
+async function ftpDownload(message, server, option, dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection) {
     //server checks
     if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
     var fileId = steamID;
-    var dName = dinoName;
-    var pri = price;
     let ftpClient = new ftp.Client();
     console.log("Downloading file. . .");
     //ftpClient.ftp.verbose = true;
@@ -492,10 +482,10 @@ async function ftpDownload(message, server, option) {
         return message.reply('something went wrong trying to grow your dino.\nDid you enter the correct steam ID? Or do you have a dinosaur on the server?');
     }
     // ftpClient.close();
-    await editJson(message, option, fileId, dName, pri);
+    await editJson(message, server, option, fileId, dinoName, price, paymentMethod, gender, permCheck, isBuy, serverSelection);
 }
 
-async function editJson(message, option, fileId, dName, pri) {
+async function editJson(message, server, option, fileId, dinoName, price, paymentMethod, gender, permCheck, isBuy, serverSelection) {
     let data = fs.readFileSync(fileId + ".json", "utf-8");
     var contents;
     if (option.toLowerCase() === "grow"){
@@ -507,12 +497,12 @@ async function editJson(message, option, fileId, dName, pri) {
                 return message.reply(`Spinosaurus has to be male to receive a grow.`);
             }
             //Switch trike name for this check
-            if(dName.toLowerCase() == "triceratops") dName = "trike";
-            if (contents.CharacterClass.toLowerCase().indexOf(dName.toLowerCase()) != -1 
-                    || dName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) != -1){
+            if(dinoName.toLowerCase() == "triceratops") dinoName = "trike";
+            if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) != -1 
+                    || dinoName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) != -1){
                 //"cera" gets mistaken for Triceratops, and "Trike" is what is compared on the file.
-                if(dName.toLowerCase() === 'cera') dName = 'ceratosaurus';
-                if(dName.toLowerCase() === 'trike') dName = 'Triceratops';
+                if(dinoName.toLowerCase() === 'cera') dinoName = 'ceratosaurus';
+                if(dinoName.toLowerCase() === 'trike') dinoName = 'Triceratops';
 
                 //Check if the pleb's bleeding or has broken leg
                 if(contents.bBrokenLegs === true || contents.BleedingRate.localeCompare("0") !== 0) {
@@ -522,7 +512,7 @@ async function editJson(message, option, fileId, dName, pri) {
 
                 //Change the value of juvi to Adult from the list of adult names defined
                 for(var i = 0; i < adultNames.length; i++) {
-                    if(adultNames[i].Dino.toLowerCase().indexOf(dName.toLowerCase()) != -1) {
+                    if(adultNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
                         contents.CharacterClass = adultNames[i].Name;
                     }
                 }
@@ -555,7 +545,7 @@ async function editJson(message, option, fileId, dName, pri) {
                 contents.Health = "15000";
             } else {
                 deleteLocalFile(fileId);
-                return message.reply(`you do not have a '${dName}' on the server.\nMake sure you have already created a dino, safelogged and checked the spelling.`);
+                return message.reply(`you do not have a '${dinoName}' on the server.\nMake sure you have already created a dino, safelogged and checked the spelling.`);
             }
         } catch (err) {
             console.error("Error editing local JSON: " + err);
@@ -563,8 +553,7 @@ async function editJson(message, option, fileId, dName, pri) {
             return message.reply('something went wrong trying to grow your dino. Please try again later.');
         }
         fs.writeFileSync(fileId + ".json", JSON.stringify(contents, null, 4));
-        console.log(`${pri},  ${price}`);
-        await ftpUpload(message, option, fileId, pri);
+        await ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection);
     }
     if (option.toLowerCase() === "inject"){
         try {
@@ -577,7 +566,7 @@ async function editJson(message, option, fileId, dName, pri) {
             }
 
             for(var i = 0; i < injectDinoNames.length; i++) {
-                if(injectDinoNames[i].Dino.toLowerCase().indexOf(dName.toLowerCase()) != -1) {
+                if(injectDinoNames[i].Dino.toLowerCase().indexOf(dinoName.toLowerCase()) != -1) {
                     console.log(`My dino: ${contents.CharacterClass} | Inject as: ${injectDinoNames[i].Name}`);
                     contents.CharacterClass = injectDinoNames[i].Name;
                 }
@@ -620,12 +609,11 @@ async function editJson(message, option, fileId, dName, pri) {
             return message.reply('something went wrong trying to inject your dino. Please try again later.');
         }
         fs.writeFileSync(fileId + ".json", JSON.stringify(contents, null, 4));
-        console.log(`${pri},  ${price}`);
-        await ftpUpload(message, option, fileId, pri);
+        await ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection);
     }
 }
 
-async function ftpUpload(message, option, fileId, pri) {
+async function ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection) {
     if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
 
@@ -641,21 +629,21 @@ async function ftpUpload(message, option, fileId, pri) {
             password: ftppassword
         });
         if(!permCheck){
-            if(!pri) return message.reply(`something went wrong, please try again later.`);
+            if(!price) return message.reply(`something went wrong, please try again later.`);
             if(paymentMethod.indexOf("cash") != -1) {
-                await deductUserAmountCash(message.guild.id, message.author.id, pri);
+                await deductUserAmountCash(message.guild.id, message.author.id, price);
             } 
             if(paymentMethod.indexOf("bank") != -1) {
-                await deductUserAmountBank(message.guild.id, message.author.id, pri);
+                await deductUserAmountBank(message.guild.id, message.author.id, price);
             }
         }
         if(isBuy === true && permCheck === true) {
-            if(!pri) return message.reply(`something went wrong, please try again later.`);
+            if(!price) return message.reply(`something went wrong, please try again later.`);
             if(paymentMethod.indexOf("cash") != -1) {
-                await deductUserAmountCash(message.guild.id, message.author.id, pri);
+                await deductUserAmountCash(message.guild.id, message.author.id, price);
             } 
             if(paymentMethod.indexOf("bank") != -1) {
-                await deductUserAmountBank(message.guild.id, message.author.id, pri);
+                await deductUserAmountBank(message.guild.id, message.author.id, price);
             }
         }
         await ftpClient.uploadFrom(fileId + ".json", serverSelection+fileId + ".json");
