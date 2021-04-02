@@ -697,7 +697,7 @@ async function getDinoPrices(message) {
     }
 
     const embed = new Discord.MessageEmbed()
-    .setTitle('To request a grow, use the command:\nUse the interactive buying option:\n~buy')
+    .setTitle('To request a grow, use the command:\n~buy')
     .setColor('#DAF7A6')
     .addFields(
         {name: "\n🦎__**DINOSAUR PRICES (Points)**__🦎\n\n",
