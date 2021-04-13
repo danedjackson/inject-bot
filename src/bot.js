@@ -29,6 +29,7 @@ const adminUsers = JSON.parse(fs.readFileSync("free_id.json"));
 
 var app = express();
 var isSteamValid;
+var processing = false;
 
 //Create an instance of client
 const client = new Discord.Client();
@@ -233,13 +234,28 @@ client.on("message", async message => {
                     if(!price) {
                         return message.reply(`that dino cannot be injected.`);
                     }
+                    if (processing) {
+                        questions.fields = [];
+                        questions.addFields({name: "waiting on other user(s) to complete their order", value: ". . ."});
+                        message.reply(questions);
+                    }
                     if(bank >= price) {
                         paymentMethod = "bank";
+                        // if(processing) message.reply(`waiting on other user(s) to complete their order. . .`);
+                        while (processing){
+                            console.log(`${message.author.username}[${message.author.id}] is waiting in queue. . .`);
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
                         await ftpDownload(message, server, "inject", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
                     } else if(cash >= price) {
                         paymentMethod = "cash";
+                        // if (processing) message.reply(`waiting on other user(s) to complete their order. . .`);
+                        while (processing){
+                            console.log(`${message.author.username}[${message.author.id}] is waiting in queue. . .`);
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
                         await ftpDownload(message, server, "inject", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
-                    } else if (cash <= price && bank < price) {
+                    } else if (cash < price && bank < price) {
                         return message.reply('you do not have enough points for this dino.');
                     } else {
                         return message.reply(`I'm having trouble growing that dino.`);
@@ -266,14 +282,29 @@ client.on("message", async message => {
                             break;
                         }
                     }
+                    if (processing) {
+                        questions.fields = [];
+                        questions.addFields({name: "waiting on other user(s) to complete their order", value: ". . ."});
+                        message.reply(questions);
+                    }
                     if(bank >= price) {
                         //Start ftp chain call
                         paymentMethod = "bank";
+                        // if(processing) message.reply(`waiting on other user(s) to complete their order. . .`);
+                        while (processing){
+                            console.log(`${message.author.username}[${message.author.id}] is waiting in queue. . .`);
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
                         await ftpDownload(message, server, "grow", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
                     } else if(cash >= price) {
                         paymentMethod = "cash";
+                        // if(processing) message.reply(`waiting on other user(s) to complete their order. . .`);
+                        while (processing){
+                            console.log(`${message.author.username}[${message.author.id}] is waiting in queue. . .`);
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
                         await ftpDownload(message, server, "grow", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
-                    } else if (cash <= price && bank < price) {
+                    } else if (cash < price && bank < price) {
                         isBuy = false;
                         permCheck = false;
                         return message.reply('you do not have enough points for this dino.');
@@ -336,7 +367,11 @@ client.on("message", async message => {
             }
             //Trike check
             if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
-            
+            if(processing) message.reply(`waiting on other user(s) to complete their order. . .`);
+            while (processing){
+                console.log(`${message.author.username}[${message.author.id}] is waiting in queue. . .`);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
             await ftpDownload(message, server, "inject", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
         }
 
@@ -366,7 +401,11 @@ client.on("message", async message => {
             }
             //Trike check
             if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
-
+            if(processing) message.reply(`waiting on other user(s) to complete their order. . .`);
+            while (processing){
+                console.log(`${message.author.username}[${message.author.id}] is waiting in queue. . .`);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
             await ftpDownload(message, server, "grow", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
         } 
 
@@ -390,7 +429,7 @@ async function getUserAmount(guildID, userID) {
         })
         .catch(function (error) {
             // handle error
-            console.log("Error: " + error.message);
+            console.error("Error: " + error.message);
         })
         .then(function () {
             // always executed
@@ -414,7 +453,7 @@ async function deductUserAmountCash(guildID, userID, price) {
         // console.log(response.data);
     })
     .catch(function (error) {
-        console.log("Error: " + error.message);
+        console.error("Error: " + error.message);
     })
     .then(function () {
 
@@ -435,7 +474,7 @@ async function deductUserAmountBank(guildID, userID, price) {
         // console.log(response.data);
     })
     .catch(function (error) {
-        console.log("Error: " + error.message);
+        console.error("Error: " + error.message);
     })
     .then(function () {
 
@@ -452,7 +491,7 @@ async function checkIDValid(id) {
             }
         })
         .catch(function (error) {
-            console.log("Error fetching server count: " + error);
+            console.error("Error fetching server count: " + error);
         })
         .then(function () {
         })
@@ -461,7 +500,8 @@ async function checkIDValid(id) {
 //FTP Connections
 async function ftpDownload(message, server, option, dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection) {
     //server checks
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
+    processing = true;
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Survival/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
     var fileId = steamID;
     let ftpClient = new ftp.Client();
@@ -478,6 +518,7 @@ async function ftpDownload(message, server, option, dinoName, price, steamID, pa
         await ftpClient.downloadTo(fileId + ".json", serverSelection + fileId + ".json");
 
     } catch(err){
+        processing = false;
         console.error("Error downloading file: " + err.message);
         return message.reply('something went wrong trying to grow your dino.\nDid you enter the correct steam ID? Or do you have a dinosaur on the server?');
     }
@@ -493,20 +534,23 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
             contents = JSON.parse(data);
             //Spino check ;)
             if (contents.CharacterClass.toLowerCase().indexOf("spino") != -1 && contents.bGender == true) {
+                processing = false;
                 deleteLocalFile(fileId);
                 return message.reply(`Spinosaurus has to be male to receive a grow.`);
             }
             //Switch trike name for this check
             if(dinoName.toLowerCase() == "triceratops") dinoName = "trike";
-            if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) != -1 
-                    || dinoName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) != -1
-                    || dinoName.toLowerCase().replace(" ", "").replace("-", "").indexOf("subrex") !== -1){
+            if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) !== -1 
+                    || dinoName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) !== -1
+                    || (dinoName.toLowerCase().replace(" ", "").replace("-", "").indexOf("subrex") !== -1 
+                    && (contents.CharacterClass.toLowerCase().indexOf("rexjuvs") !== -1 || contents.CharacterClass.toLowerCase().indexOf("rexsubs") !== -1))){
                 //"cera" gets mistaken for Triceratops, and "Trike" is what is compared on the file.
                 if(dinoName.toLowerCase() === 'cera') dinoName = 'ceratosaurus';
                 if(dinoName.toLowerCase() === 'trike') dinoName = 'Triceratops';
 
                 //Check if the pleb's bleeding or has broken leg
                 if(contents.bBrokenLegs === true || contents.BleedingRate.localeCompare("0") !== 0) {
+                    processing = false;
                     deleteLocalFile(fileId);
                     return message.reply(`your dino is either bleeding or has a broken leg. Try again when the leg is healed or when you have stopped bleeding.`);
                 }
@@ -549,13 +593,15 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                 contents.Health = "15000";
             } else {
                 deleteLocalFile(fileId);
-                console.log(`${message.author.username} [${message.author.id}]: Error - user may be trying to grow a dino which they do not have.`);
+                console.error(`${message.author.username} [${message.author.id}]: Error - user may be trying to grow a dino which they do not have.`);
+                processing = false;
                 return message.reply(`you do not have a '${dinoName}' on the server.\nMake sure you have already created a dino, safelogged and checked the spelling.`);
             }
         } catch (err) {
             console.error("Error editing local JSON: " + err);
             deleteLocalFile(fileId);
-            console.log(`${message.author.username} [${message.author.id}]: Error - there was an issue making changes to the user's dino`);
+            console.error(`${message.author.username} [${message.author.id}]: Error - there was an issue making changes to the user's dino`);
+            processing = false;
             return message.reply('something went wrong trying to grow your dino. Please try again later.');
         }
         fs.writeFileSync(fileId + ".json", JSON.stringify(contents, null, 4));
@@ -567,6 +613,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 
             //Check if the pleb's bleeding or has broken leg
             if(contents.bBrokenLegs === true || contents.BleedingRate.localeCompare("0") !== 0) {
+                processing = false;
                 deleteLocalFile(fileId);
                 return message.reply(`your dino is either bleeding or has a broken leg. Try again when the leg is healed or when you have stopped bleeding.`);
             }
@@ -611,8 +658,9 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
             }
         } catch (err) {
             console.error("Error editing local JSON: " + err);
+            processing = false;
             deleteLocalFile(fileId);
-            console.log(`${message.author.username} [${message.author.id}]: Error - there was an issue making changes to the user's dino`);
+            console.error(`${message.author.username} [${message.author.id}]: Error - there was an issue making changes to the user's dino`);
             return message.reply('something went wrong trying to inject your dino. Please try again later.');
         }
         fs.writeFileSync(fileId + ".json", JSON.stringify(contents, null, 4));
@@ -621,7 +669,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 }
 
 async function ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Survival/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
 
     let ftpClient = new ftp.Client();
@@ -638,7 +686,8 @@ async function ftpUpload(message, server, option, fileId, price, paymentMethod, 
         if(!permCheck){
             //This should be in bot if blocks since admins should pay for ~buy command
             if(!price) {
-                console.log(`${message.author.username} [${message.author.id}]: Error - no price defined for the requested dino.`);
+                console.error(`${message.author.username} [${message.author.id}]: Error - no price defined for the requested dino.`);
+                processing = false;
                 return message.reply(`something went wrong, please try again later.`);
             }
             if(paymentMethod.indexOf("cash") != -1) {
@@ -651,7 +700,8 @@ async function ftpUpload(message, server, option, fileId, price, paymentMethod, 
         if(isBuy === true && permCheck === true) {
             //This should be in bot if blocks since admins should pay for ~buy command
             if(!price) {
-                console.log(`${message.author.username} [${message.author.id}]: Error - no price defined for the requested dino.`);
+                console.error(`${message.author.username} [${message.author.id}]: Error - no price defined for the requested dino.`);
+                processing = false;
                 return message.reply(`something went wrong, please try again later.`);
             }
             if(paymentMethod.indexOf("cash") != -1) {
@@ -672,9 +722,12 @@ async function ftpUpload(message, server, option, fileId, price, paymentMethod, 
     } catch(err){
         console.error("Error uploading JSON file: " + err.message);
         deleteLocalFile(fileId);
-        console.log(`${message.author.username} [${message.author.id}] had problems with this transaction.`);
+        ftpClient.close();
+        console.error(`${message.author.username} [${message.author.id}] had problems with this transaction.`);
+        processing = false;
         return message.reply('something went wrong trying to grow your dino. Please try again later.');
     }
+    processing = false;
     deleteLocalFile(fileId);
     ftpClient.close();
 }
@@ -682,7 +735,7 @@ async function ftpUpload(message, server, option, fileId, price, paymentMethod, 
 async function deleteLocalFile(fileId) {
     console.log("Deleting local files . . .");
     fs.unlink("./" + fileId + ".json", (err) => {
-        if (err) console.log(err);
+        if (err) console.error(err);
     });
 }
 
@@ -733,7 +786,7 @@ async function updateSteamID (id, newID) {
             //Update user
             steamInfo[x].SteamID = newID;
             fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
-            await sendFile(steamInfo);
+            // await sendFile(steamInfo); 
             return true;
         }
     }
@@ -761,7 +814,7 @@ async function addSteamID (userID, steamID) {
         "SteamID": steamID
     });
     fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
-    await sendFile(steamInfo);
+    // await sendFile(steamInfo);
     return true;
 }
 
