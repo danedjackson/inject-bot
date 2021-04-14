@@ -761,7 +761,7 @@ async function getDinoPrices(message) {
 }
 
 async function getSteamID (id) {
-    const steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
+    var steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
     for (var x = 0; x < steamInfo.length; x++) {
         if (id == steamInfo[x].User)
             return steamInfo[x].SteamID;
@@ -772,7 +772,7 @@ async function updateSteamID (id, newID) {
     let userID = id.substring(3, id.length-1);
     await checkIDValid(newID);
     if (isSteamValid == false) return false;
-    const steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
+    var steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
     //Search if new ID already exists
     for (var i = 0; i < steamInfo.length; i++) {
         if(newID == steamInfo[i].SteamID) {
@@ -795,7 +795,7 @@ async function updateSteamID (id, newID) {
 async function addSteamID (userID, steamID) {
     await checkIDValid(steamID);
     if (isSteamValid == false) return false;
-    const steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
+    var steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
     //Search for user
     for (var x = 0; x < steamInfo.length; x++) {
         //Found user
@@ -829,7 +829,7 @@ async function sendFile(info) {
             user: ftpusername,
             password: ftppassword
         });
-        await ftpClient.uploadFrom("steam-id.json", "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/steam-id.json");
+        await ftpClient.uploadFrom("steam-id.json", "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/steam-id.json");
     } catch(err){
         console.error("Error uploading steam-id JSON file: " + err.message);
     }
