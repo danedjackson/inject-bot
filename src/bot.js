@@ -786,7 +786,7 @@ async function updateSteamID (id, newID) {
             //Update user
             steamInfo[x].SteamID = newID;
             fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
-            // await sendFile(steamInfo); 
+            await sendFile(steamInfo); 
             return true;
         }
     }
@@ -814,7 +814,7 @@ async function addSteamID (userID, steamID) {
         "SteamID": steamID
     });
     fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
-    // await sendFile(steamInfo);
+    await sendFile(steamInfo);
     return true;
 }
 
