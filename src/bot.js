@@ -543,7 +543,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
             if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) !== -1 
                     || dinoName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) !== -1
                     || (dinoName.toLowerCase().replace(" ", "").replace("-", "").indexOf("subrex") !== -1 
-                    && (contents.CharacterClass.toLowerCase().indexOf("rexjuvs") !== -1 || contents.CharacterClass.toLowerCase().indexOf("rexsubs") !== -1))){
+                    && (contents.CharacterClass.toLowerCase().indexOf("rexjuvs") !== -1 || contents.CharacterClass.toLowerCase().indexOf("rexsubs") !== -1 || contents.CharacterClass.toLowerCase().indexOf("rexhatchs") !== -1))){
                 //"cera" gets mistaken for Triceratops, and "Trike" is what is compared on the file.
                 if(dinoName.toLowerCase() === 'cera') dinoName = 'ceratosaurus';
                 if(dinoName.toLowerCase() === 'trike') dinoName = 'Triceratops';
