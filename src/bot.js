@@ -57,6 +57,13 @@ function cancelCheck(message, msg) {
     return false;
 }
 
+function selectedServer(server, serverSelection) {
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
+
+    return serverSelection;
+}
+
 client.on("message", async message => {
     if (message.author.bot) return
     
@@ -80,6 +87,89 @@ client.on("message", async message => {
             .substring(prefix.length)
             .split(/ +/g);
         
+        if (cmdName.toLowerCase() === 'slay') {
+            //Check message length
+            if (args.length == 0) {
+                if(await getSteamID(message.author.id) == false) {
+                    return message.reply(`your steam ID was not found, please link your ID using ${prefix}link [your steam ID]`);
+                }
+                const filter = m => m.author.id === message.author.id;
+                const options = {
+                    max: 1,
+                    time: 300000
+                };
+                //Create embed to display instructions
+                var slayEmbed = new Discord.MessageEmbed()
+                    .setTitle('Slay Menu')
+                    .setColor('#FF0000')
+                    .addFields(
+                        {name: 'Are you safelogged?',
+                        value: "Please type either:\nyes\nno"}
+                    )
+                    .setFooter(`User transaction: ${message.author.username}`);
+                //Prompting user with embed
+                message.reply(slayEmbed);
+                
+                var timedOut = false;
+                var safelogged;
+                await message.channel.awaitMessages(filter, options).then((collected)=>{safelogged = collected.first().content}).catch(collected => {return timedOut = true;});    
+                if(cancelCheck(message, safelogged)) return false;
+                if (safelogged == undefined || safelogged == null || safelogged == "" || safelogged.toLowerCase() == "no" || safelogged.toLowerCase() == "n"){
+                    return message.reply(`please safelog before continuing.`);
+                }
+                if (safelogged.toLowerCase().localeCompare("yes") !== 0 && safelogged.toLowerCase().localeCompare("y") !== 0){
+                    return message.reply(`please enter yes or no.`);                    
+                }
+                
+                var server;
+                //If the request times out, stop processing
+                if(timedOut) {return false;}
+                slayEmbed.fields = [];
+                slayEmbed.addFields({name: "Which server?", value: "Please type either 1 or 2:\n1 - New Beginnings [High AI]\n2 - New Beginnings [High AI #2]"});
+                message.reply(slayEmbed);
+                await message.channel.awaitMessages(filter, options).then((collected)=>{server = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
+                if(cancelCheck(message, server)) return false;
+                if(server.localeCompare("1") === -1 && server.localeCompare("2") === -1) {
+                    return message.reply(`please type either 1 or 2.`);
+                }
+
+                var confirm;
+                //Update embed and prompt user with it
+                slayEmbed.fields = [];
+                slayEmbed.addFields({name: "Confirm slay?", value: "Please type either:\nyes\nno"});
+                message.reply(slayEmbed);
+                await message.channel.awaitMessages(filter, options).then((collected)=>{confirm = collected.first().content}).catch(collected => {message.reply(`time ran out. Please try again`); return timedOut = true;});
+                if(timedOut) {return false;}
+                if(cancelCheck(message, confirm)) return false;
+                if (confirm.toLowerCase() == "no" || confirm.toLowerCase() == "n") {
+                    return message.reply(`you cancelled this request.`);
+                }
+                if(confirm.toLowerCase().localeCompare("yes") !== 0 && confirm.toLowerCase().localeCompare("y") !== 0) {
+                    return message.reply(`please enter yes or no.`);
+                }
+                
+                slayEmbed.fields = [];
+                slayEmbed.setTitle("Please wait . . .");
+                message.reply(slayEmbed);
+
+                //Checks if other process is running
+                if (processing) {
+                    slayEmbed.fields = [];
+                    slayEmbed.addFields({name: "waiting on other user(s) to complete their order", value: ". . ."});
+                    message.reply(slayEmbed);
+                }
+
+                while (processing){
+                    console.log(`${message.author.username}[${message.author.id}] is waiting in queue. . .`);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                await ftpDelete(message, server, serverSelection);
+            }
+            else {
+                message.reply(`please use ${prefix}slay`);
+            }
+        }
+
         //Await Message for interactive buying
         if (cmdName.toLowerCase() === 'buy') {
             if (args.length == 0) {
@@ -196,7 +286,6 @@ client.on("message", async message => {
                     return message.reply(`please enter yes or no.`);
                 }
 
-                if(timedOut) {return false;}
                 questions.fields = [];
                 questions.setTitle("Please wait . . .");
                 message.reply(questions);
@@ -498,11 +587,47 @@ async function checkIDValid(id) {
 }
 
 //FTP Connections
+async function ftpDelete(message, server, serverSelection) {
+    processing = true;
+    serverSelection = selectedServer(server, serverSelection);
+    var fileId = await getSteamID(message.author.id);
+    console.log("Deleting file. . .");
+
+    var ftpClient = new ftp.Client();
+    ftpClient.ftp.ipFamily = 4;
+    // ftpClient.ftp.verbose = true;
+    try {
+        await ftpClient.access({
+            host: ftpLocation,
+            port:ftpPort,
+            user: ftpusername,
+            password: ftppassword
+        });
+        var status = await ftpClient.remove(serverSelection + fileId + ".json");
+        var retryCount = 0;
+        while (status.code != 250 && retryCount < 2) {
+            status = await ftpClient.remove(serverSelection + fileId + ".json");
+            retryCount++;
+        }
+        if (status.code != 250) {
+            processing = false;
+            return message.reply(`I could not slay your dinosaur. . . Try again please.`);
+        }
+        processing = false;
+        ftpClient.close();
+        return message.reply(`you have been slain.`);
+    }catch(err){
+        processing = false;
+        console.error("Error deleting file: " + err.message);
+        ftpClient.close();
+        return message.reply('something went wrong trying to slay your dino.\nHave you linked your steam ID?');
+    }
+}
+
 async function ftpDownload(message, server, option, dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection) {
     //server checks
     processing = true;
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
-    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
+    serverSelection = selectedServer(server, serverSelection);
     var fileId = steamID;
     let ftpClient = new ftp.Client();
     console.log("Downloading file. . .");
@@ -669,8 +794,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 }
 
 async function ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
-    if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
+    serverSelection = selectedServer(server, serverSelection);
 
     let ftpClient = new ftp.Client();
     console.log("Uploading file. . .");
@@ -711,7 +835,15 @@ async function ftpUpload(message, server, option, fileId, price, paymentMethod, 
                 await deductUserAmountBank(message.guild.id, message.author.id, price);
             }
         }
-        await ftpClient.uploadFrom(fileId + ".json", serverSelection+fileId + ".json");
+        var status = await ftpClient.uploadFrom(fileId + ".json", serverSelection+fileId + ".json");
+        var retryCount = 0;
+        while (status.code != 226 && retryCount < 2) {
+            status = await ftpClient.uploadFrom(fileId + ".json", serverSelection+fileId + ".json");
+            retryCount++;
+        }
+        if (status.code != 226) {
+            return message.reply(`I could not grow / inject your dinosaur. . . Try again please.`);
+        }
         if(option.toLowerCase() === "grow"){
             console.log(`${message.author.username} [${message.author.id}] grown successfully.`);
             message.reply('dino grown successfully.');
