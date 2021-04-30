@@ -60,6 +60,7 @@ function cancelCheck(message, msg) {
 function selectedServer(server, serverSelection) {
     if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "3") serverSelection = "/" + ftpLocation +"_14100/TheIsle/Saved/PlayerData/";
 
     return serverSelection;
 }
