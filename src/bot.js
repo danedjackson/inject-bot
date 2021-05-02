@@ -703,13 +703,13 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 
                 if (server === "2") {
                 var locationParts;
-                    locationParts = contents.Location_Thenyaw_Island.split("Z=", 2);
+                    locationParts = contents.Location_Isle_V3.split("Z=", 2);
                     locationParts[1] = parseFloat(locationParts[1]);
                     locationParts[1] += 0.9;
                     locationParts[0] += "Z=";
                     locationParts[1] = locationParts[1].toString();
                     var completed = locationParts[0] + locationParts[1];
-                    contents.Location_Thenyaw_Island = completed;
+                    contents.contents.Location_Isle_V3 = completed;
                 }
                 contents.Growth = "1.0";
                 contents.Hunger = "9999";
