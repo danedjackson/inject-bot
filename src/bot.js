@@ -709,7 +709,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                     locationParts[0] += "Z=";
                     locationParts[1] = locationParts[1].toString();
                     var completed = locationParts[0] + locationParts[1];
-                    contents.contents.Location_Isle_V3 = completed;
+                    contents.Location_Isle_V = completed;
                 }
                 contents.Growth = "1.0";
                 contents.Hunger = "9999";
