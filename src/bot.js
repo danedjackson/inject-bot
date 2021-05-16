@@ -421,10 +421,13 @@ client.on("message", async message => {
         if (cmdName.toLowerCase() === 'updatesteamid') {
             isSteamValid = null;
             if (args.length != 2) return message.reply(`please use this format:\n${prefix}updatesteamid [@User to update] [Updated Steam ID]`);
-            if (message.member.roles.cache.find(r => r.name.toLowerCase() === adminRole.toLowerCase())) {
-                if(await updateSteamID(args[0], args[1]) == false) return message.reply(`that steam ID may already exist or is invalid. Please try again`);
-                return message.reply(`${args[0]}'s steam ID has been updated.`)
-            } else return message.reply(`you do not have rights to use this command.`);
+            for (var x = 0; x < adminUsers.length; x++) {
+                if (message.member.roles.cache.has(adminUsers[x].id)){
+                    if(await updateSteamID(args[0], args[1]) == false) return message.reply(`that steam ID may already exist or is invalid. Please try again`);
+                    return message.reply(`${args[0]}'s steam ID has been updated.`)
+                }
+            } 
+            return message.reply(`you do not have rights to use this command.`);
         }
 
         if (cmdName.toLowerCase() === 'inject') {
@@ -918,7 +921,7 @@ async function updateSteamID (id, newID) {
             //Update user
             steamInfo[x].SteamID = newID;
             fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
-            await sendFile(steamInfo); 
+            // await sendFile(steamInfo); 
             return true;
         }
     }
@@ -941,12 +944,14 @@ async function addSteamID (userID, steamID) {
             return false;
         }
     }
+    //Replacing every character that is not a digit with empty.
+    steamID = steamID.replace(/\D/g, '');
     steamInfo.push({
         "User": userID,
         "SteamID": steamID
     });
     fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
-    await sendFile(steamInfo);
+    // await sendFile(steamInfo);
     return true;
 }
 
