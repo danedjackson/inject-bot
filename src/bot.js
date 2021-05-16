@@ -7,8 +7,8 @@ const Discord = require('discord.js');
 const ftp = require('basic-ftp');
 const fs = require('fs');
 const axios = require('axios');
-const express = require('express');
-const updateCount = require('./server_pop.js');
+// const express = require('express');
+// const updateCount = require('./server_pop.js');
 
 const token = process.env.BOT_TOKEN;
 const prefix = process.env.PREFIX;
@@ -16,10 +16,10 @@ const ftpLocation = process.env.FTPLOCATION;
 const ftpPort = process.env.FTPPORT;
 const ftpusername = process.env.FTPUSERNAME;
 const ftppassword = process.env.FTPPASSWORD;
-const ownerID = process.env.OWNERID;
-const devID = process.env.DEVID;
+// const ownerID = process.env.OWNERID;
+// const devID = process.env.DEVID;
 const steamKey = process.env.STEAMKEY;
-const adminRole = process.env.STEAMUPDATEROLE;
+// const adminRole = process.env.STEAMUPDATEROLE;
 
 const dinoPrices = JSON.parse(fs.readFileSync("prices.json"));
 const adultNames = JSON.parse(fs.readFileSync("names.json"));
@@ -27,7 +27,7 @@ const injectDinoPrices = JSON.parse(fs.readFileSync("inject-prices.json"));
 const injectDinoNames = JSON.parse(fs.readFileSync("inject-names.json"));
 const adminUsers = JSON.parse(fs.readFileSync("free_id.json"));
 
-var app = express();
+// var app = express();
 var isSteamValid;
 var processing = false;
 
@@ -35,13 +35,13 @@ var processing = false;
 const client = new Discord.Client();
 
 //Keep Bot alive on Heruko
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Running on port ${ PORT }`);
-});
-app.get('/',(req,res) => {
-    return res.send('Hello');
-    });
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//     console.log(`Running on port ${ PORT }`);
+// });
+// app.get('/',(req,res) => {
+//     return res.send('Hello');
+//     });
 
 client.on("ready", () => {
     console.log(`${client.user.tag} logged in.`)
