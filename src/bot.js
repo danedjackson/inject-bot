@@ -6,9 +6,7 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const ftp = require('basic-ftp');
 const fs = require('fs');
-const axios = require('axios');
-// const express = require('express');
-// const updateCount = require('./server_pop.js');
+// const axios = require('axios');
 
 const token = process.env.BOT_TOKEN;
 const prefix = process.env.PREFIX;
@@ -16,10 +14,6 @@ const ftpLocation = process.env.FTPLOCATION;
 const ftpPort = process.env.FTPPORT;
 const ftpusername = process.env.FTPUSERNAME;
 const ftppassword = process.env.FTPPASSWORD;
-// const ownerID = process.env.OWNERID;
-// const devID = process.env.DEVID;
-const steamKey = process.env.STEAMKEY;
-// const adminRole = process.env.STEAMUPDATEROLE;
 
 const dinoPrices = JSON.parse(fs.readFileSync("prices.json"));
 const adultNames = JSON.parse(fs.readFileSync("names.json"));
@@ -27,21 +21,12 @@ const injectDinoPrices = JSON.parse(fs.readFileSync("inject-prices.json"));
 const injectDinoNames = JSON.parse(fs.readFileSync("inject-names.json"));
 const adminUsers = JSON.parse(fs.readFileSync("free_id.json"));
 
-// var app = express();
-var isSteamValid;
 var processing = false;
+var { getSteamID, updateSteamID, addSteamID } = require('./api/steam_manager');
+var { getUserAmount, deductUserAmountCash, deductUserAmountBank } = require('./api/unbelievaboat')
 
 //Create an instance of client
 const client = new Discord.Client();
-
-//Keep Bot alive on Heruko
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//     console.log(`Running on port ${ PORT }`);
-// });
-// app.get('/',(req,res) => {
-//     return res.send('Hello');
-//     });
 
 client.on("ready", () => {
     console.log(`${client.user.tag} logged in.`)
@@ -58,7 +43,7 @@ function cancelCheck(message, msg) {
 }
 
 function selectedServer(server, serverSelection) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
 
     return serverSelection;
@@ -80,7 +65,6 @@ client.on("message", async message => {
     var serverSelection;
 
     if (message.content.startsWith(prefix)) {
-        // console.log(`${message.guild.id} | ${message.author.id} | ${message.author.tag}: ${message.content}`);
         //Assigning the bot command to respective variables using the spreader operator ...
         const [cmdName, ...args] = message.content
             .trim()
@@ -412,14 +396,12 @@ client.on("message", async message => {
         }
 
         if (cmdName.toLowerCase() === 'link') {
-            isSteamValid = null;
             if (args.length != 1) return message.reply(`please paste your steam ID with the format:\n${prefix}link [Your Steam ID Here]`);
             if(await addSteamID(message.author.id, args[0]) == false) return message.reply(`that does not seem to be a valid steam ID, or it is already in use. Please try again.`);
             return message.reply(`your steam ID has been linked.`);
         }
 
         if (cmdName.toLowerCase() === 'updatesteamid') {
-            isSteamValid = null;
             if (args.length != 2) return message.reply(`please use this format:\n${prefix}updatesteamid [@User to update] [Updated Steam ID]`);
             for (var x = 0; x < adminUsers.length; x++) {
                 if (message.member.roles.cache.has(adminUsers[x].id)){
@@ -506,88 +488,6 @@ client.on("message", async message => {
         }
     }
 });
-
-//APIs
-async function getUserAmount(guildID, userID) {
-    return await axios.get(process.env.MONEY_BOT_URL + "/guilds/" + guildID + "/users/" + userID, {
-            headers: {
-                'Authorization': process.env.MONEY_BOT_AUTH
-            }
-        })
-        .then(function (response) {
-            // handle success
-            bank = response.data.bank;
-            cash = response.data.cash;
-        })
-        .catch(function (error) {
-            // handle error
-            console.error("Error: " + error.message);
-        })
-        .then(function () {
-            // always executed
-            return [bank, cash];
-        }
-    );
-}
-
-async function deductUserAmountCash(guildID, userID, price) {
-    return await axios.patch(process.env.MONEY_BOT_URL + "/guilds/" + guildID + "/users/" + userID, 
-    {
-        cash: "-" + price,
-        bank: "0"
-    }, 
-    {
-        headers: {
-            'Authorization': process.env.MONEY_BOT_AUTH
-        }
-    })
-    .then(function (response) {
-        // console.log(response.data);
-    })
-    .catch(function (error) {
-        console.error("Error: " + error.message);
-    })
-    .then(function () {
-
-    });
-}
-async function deductUserAmountBank(guildID, userID, price) {
-    return await axios.patch(process.env.MONEY_BOT_URL + "/guilds/" + guildID + "/users/" + userID, 
-    {
-        cash: "0",
-        bank: "-" + price
-    }, 
-    {
-        headers: {
-            'Authorization': process.env.MONEY_BOT_AUTH
-        }
-    })
-    .then(function (response) {
-        // console.log(response.data);
-    })
-    .catch(function (error) {
-        console.error("Error: " + error.message);
-    })
-    .then(function () {
-
-    });
-}
-
-async function checkIDValid(id) {
-    return await axios.get(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${steamKey}&format=json&steamids=${id}`)
-        .then(function(response) {
-            if (response.data.response.players == "" || response.data.response.players== null || response.data.response.players == undefined ) {
-                isSteamValid = false;
-            } else {
-                isSteamValid = true;
-            }
-        })
-        .catch(function (error) {
-            console.error("Error fetching server count: " + error);
-        })
-        .then(function () {
-        })
-}
 
 //FTP Connections
 async function ftpDelete(message, server, serverSelection) {
@@ -693,7 +593,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                     
                 }
                 //Adding 0.5 to Z axis
-                if (server === "1") {
+                if (server === "1" || server === "2") {
                     var locationParts;
                     locationParts = contents.Location_Isle_V3.split("Z=", 2);
                     locationParts[1] = parseFloat(locationParts[1]);
@@ -702,17 +602,6 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                     locationParts[1] = locationParts[1].toString();
                     var completed = locationParts[0] + locationParts[1];
                     contents.Location_Isle_V3 = completed;
-                }
-
-                if (server === "2") {
-                var locationParts;
-                    locationParts = contents.Location_Isle_V3.split("Z=", 2);
-                    locationParts[1] = parseFloat(locationParts[1]);
-                    locationParts[1] += 0.9;
-                    locationParts[0] += "Z=";
-                    locationParts[1] = locationParts[1].toString();
-                    var completed = locationParts[0] + locationParts[1];
-                    contents.Location_Isle_V = completed;
                 }
                 contents.Growth = "1.0";
                 contents.Hunger = "9999";
@@ -753,7 +642,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                 }
             }
             //Adding 0.5 to Z axis
-            if (server === "1") {
+            if (server === "1" || server === "2") {
                 var locationParts;
                 locationParts = contents.Location_Isle_V3.split("Z=", 2);
                 locationParts[1] = parseFloat(locationParts[1]);
@@ -762,17 +651,6 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                 locationParts[1] = locationParts[1].toString();
                 var completed = locationParts[0] + locationParts[1];
                 contents.Location_Isle_V3 = completed;
-            }
-
-            if (server === "2") {
-                var locationParts;
-                locationParts = contents.Location_Thenyaw_Island.split("Z=", 2);
-                locationParts[1] = parseFloat(locationParts[1]);
-                locationParts[1] += 0.9;
-                locationParts[0] += "Z=";
-                locationParts[1] = locationParts[1].toString();
-                var completed = locationParts[0] + locationParts[1];
-                contents.Location_Thenyaw_Island = completed;
             }
             contents.Growth = "1.0";
             contents.Hunger = "9999";
@@ -893,66 +771,6 @@ async function getDinoPrices(message) {
     )
     
     return message.reply(embed);
-}
-
-async function getSteamID (id) {
-    var steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
-    for (var x = 0; x < steamInfo.length; x++) {
-        if (id == steamInfo[x].User)
-            return steamInfo[x].SteamID;
-    }
-    return false;
-}
-async function updateSteamID (id, newID) {
-    let userID = id.substring(3, id.length-1);
-    await checkIDValid(newID);
-    if (isSteamValid == false) return false;
-    var steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
-    //Search if new ID already exists
-    for (var i = 0; i < steamInfo.length; i++) {
-        if(newID == steamInfo[i].SteamID) {
-            return false;
-        }
-    }
-    //Search for user
-    for (var x = 0; x < steamInfo.length; x++) {
-        //Found user
-        if (userID == steamInfo[x].User){
-            //Update user
-            steamInfo[x].SteamID = newID;
-            fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
-            // await sendFile(steamInfo); 
-            return true;
-        }
-    }
-    return false;
-}
-async function addSteamID (userID, steamID) {
-    await checkIDValid(steamID);
-    if (isSteamValid == false) return false;
-    var steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
-    //Search for user
-    for (var x = 0; x < steamInfo.length; x++) {
-        //Found user
-        if (userID == steamInfo[x].User)
-            //User already exists
-            return false;
-    }
-    //Check if steam id already exists
-    for (var i = 0; i < steamInfo.length; i++) {
-        if (steamID == steamInfo[i].SteamID){
-            return false;
-        }
-    }
-    //Replacing every character that is not a digit with empty.
-    steamID = steamID.replace(/\D/g, '');
-    steamInfo.push({
-        "User": userID,
-        "SteamID": steamID
-    });
-    fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
-    // await sendFile(steamInfo);
-    return true;
 }
 
 //sending message to owner for lives backup
