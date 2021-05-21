@@ -26,7 +26,7 @@ const transferRoles = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./json
 var processing = false;
 var { getSteamID, updateSteamID, addSteamID } = require('./api/steam_manager');
 var { getUserAmount, deductUserAmountCash, deductUserAmountBank } = require('./api/unbelievaboat');
-var { transferPoints } = require('./point-transfer')
+var { transferPoints } = require('./functions/point-transfer')
 
 //Create an instance of client
 const client = new Discord.Client();

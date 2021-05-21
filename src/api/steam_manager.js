@@ -1,5 +1,6 @@
 const fs = require('fs');
 const axios = require('axios');
+const path = require('path');
 const steamKey = process.env.STEAMKEY;
 var isSteamValid;
 
@@ -19,7 +20,7 @@ async function checkIDValid(id) {
         })
 }
 async function getSteamID (id) {
-    var steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
+    var steamInfo = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../json/steam-id.json")));
     for (var x = 0; x < steamInfo.length; x++) {
         if (id == steamInfo[x].User)
             return steamInfo[x].SteamID;
@@ -30,7 +31,7 @@ async function updateSteamID (id, newID) {
     let userID = id.substring(3, id.length-1);
     await checkIDValid(newID);
     if (isSteamValid == false) return false;
-    var steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
+    var steamInfo = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../json/steam-id.json")));
     //Search if new ID already exists
     for (var i = 0; i < steamInfo.length; i++) {
         if(newID == steamInfo[i].SteamID) {
@@ -43,7 +44,7 @@ async function updateSteamID (id, newID) {
         if (userID == steamInfo[x].User){
             //Update user
             steamInfo[x].SteamID = newID;
-            fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
+            fs.writeFileSync(path.resolve(__dirname, "../json/steam-id.json"), JSON.stringify(steamInfo, null, 4));
             return true;
         }
     }
@@ -52,7 +53,7 @@ async function updateSteamID (id, newID) {
 async function addSteamID (userID, steamID) {
     await checkIDValid(steamID);
     if (isSteamValid == false) return false;
-    var steamInfo = JSON.parse(fs.readFileSync("steam-id.json"));
+    var steamInfo = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../json/steam-id.json")));
     //Search for user
     for (var x = 0; x < steamInfo.length; x++) {
         //Found user
@@ -72,7 +73,7 @@ async function addSteamID (userID, steamID) {
         "User": userID,
         "SteamID": steamID
     });
-    fs.writeFileSync("steam-id.json", JSON.stringify(steamInfo, null, 4));
+    fs.writeFileSync(path.resolve(__dirname, "../json/steam-id.json"), JSON.stringify(steamInfo, null, 4));
     return true;
 }
 

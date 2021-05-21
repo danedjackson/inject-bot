@@ -1,4 +1,4 @@
-var { getUserAmount, deductUserAmountCash, deductUserAmountBank, addUserAmountBank } = require('./api/unbelievaboat');
+var { getUserAmount, deductUserAmountCash, deductUserAmountBank, addUserAmountBank } = require('../api/unbelievaboat');
 
 async function transferPoints(message, toUserID, amount) {
     var deducted = false;
