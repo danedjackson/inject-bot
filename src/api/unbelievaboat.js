@@ -14,6 +14,7 @@ async function getUserAmount(guildID, userID) {
         .catch(function (error) {
             // handle error
             console.error("Error: " + error.message);
+            return false;
         })
         .then(function () {
             // always executed
@@ -35,12 +36,11 @@ async function deductUserAmountCash(guildID, userID, price) {
     })
     .then(function (response) {
         // console.log(response.data);
+        return true;
     })
     .catch(function (error) {
         console.error("Error: " + error.message);
-    })
-    .then(function () {
-
+        return false;
     });
 }
 async function deductUserAmountBank(guildID, userID, price) {
@@ -55,14 +55,31 @@ async function deductUserAmountBank(guildID, userID, price) {
         }
     })
     .then(function (response) {
-        // console.log(response.data);
+        return true;
     })
     .catch(function (error) {
         console.error("Error: " + error.message);
+        return false;
+    });
+}
+async function addUserAmountBank(guildID, userID, amount) {
+    return await axios.patch(process.env.MONEY_BOT_URL + "/guilds/" + guildID + "/users/" + userID, 
+    {
+        cash: "0",
+        bank: amount
+    }, 
+    {
+        headers: {
+            'Authorization': process.env.MONEY_BOT_AUTH
+        }
     })
-    .then(function () {
-
+    .then(function (response) {
+        return true;
+    })
+    .catch(function (error) {
+        console.error("Error: " + error.message);
+        return false;
     });
 }
 
-module.exports = { getUserAmount, deductUserAmountCash, deductUserAmountBank }
+module.exports = { getUserAmount, deductUserAmountCash, deductUserAmountBank, addUserAmountBank }

@@ -6,6 +6,7 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const ftp = require('basic-ftp');
 const fs = require('fs');
+const path = require('path');
 // const axios = require('axios');
 
 const token = process.env.BOT_TOKEN;
@@ -15,15 +16,17 @@ const ftpPort = process.env.FTPPORT;
 const ftpusername = process.env.FTPUSERNAME;
 const ftppassword = process.env.FTPPASSWORD;
 
-const dinoPrices = JSON.parse(fs.readFileSync("prices.json"));
-const adultNames = JSON.parse(fs.readFileSync("names.json"));
-const injectDinoPrices = JSON.parse(fs.readFileSync("inject-prices.json"));
-const injectDinoNames = JSON.parse(fs.readFileSync("inject-names.json"));
-const adminUsers = JSON.parse(fs.readFileSync("free_id.json"));
+const dinoPrices = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./json/prices.json")));
+const adultNames = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./json/names.json")));
+const injectDinoPrices = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./json/inject-prices.json")));
+const injectDinoNames = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./json/inject-names.json")));
+const adminUsers = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./json/free-id.json")));
+const transferRoles = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./json/transfer-roles.json")));
 
 var processing = false;
 var { getSteamID, updateSteamID, addSteamID } = require('./api/steam_manager');
-var { getUserAmount, deductUserAmountCash, deductUserAmountBank } = require('./api/unbelievaboat')
+var { getUserAmount, deductUserAmountCash, deductUserAmountBank } = require('./api/unbelievaboat');
+var { transferPoints } = require('./point-transfer')
 
 //Create an instance of client
 const client = new Discord.Client();
@@ -483,8 +486,21 @@ client.on("message", async message => {
             await ftpDownload(message, server, "grow", dinoName, price, steamID, paymentMethod, gender, permCheck, isBuy, serverSelection);
         } 
 
-        if (cmdName === 'price'){
+        if (cmdName.toLowerCase() === 'price'){
             await getDinoPrices(message);
+        }
+
+        if (cmdName.toLowerCase() === 'givepoints') {
+            if (args.length != 2) return message.reply(`please use this format (without the [ ]):\n${prefix}givepoints [@PlayerToGive] [amount to give]`);
+
+            var targetMember = message.mentions.members.first();
+            if (message.member.roles.cache.has(transferRoles.regular) 
+                    && !message.member.roles.cache.has(transferRoles.muted) 
+                    && targetMember.roles.cache.has(transferRoles.regular)){
+                message.reply(`please wait. . .`);
+                return await transferPoints(message, targetMember.id, args[1]);
+            } 
+            return message.reply(`you do not have the permission to transfer points.`)
         }
     }
 });
@@ -754,7 +770,7 @@ async function deleteLocalFile(fileId) {
 
 //Misc
 async function getDinoPrices(message) {
-    let file = fs.readFileSync('prices.json');
+    let file = fs.readFileSync(path.resolve(__dirname,'./json/prices.json'));
     var data = JSON.parse(file);
     var msg = "";
 
