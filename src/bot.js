@@ -26,7 +26,8 @@ const transferRoles = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./json
 var processing = false;
 var { getSteamID, updateSteamID, addSteamID } = require('./api/steam_manager');
 var { getUserAmount, deductUserAmountCash, deductUserAmountBank } = require('./api/unbelievaboat');
-var { transferPoints } = require('./functions/point-transfer')
+var { transferPoints } = require('./functions/point-transfer');
+var { storeTransferHistory, hoursSinceLastTransfer } = require('./functions/time-manager');
 
 //Create an instance of client
 const client = new Discord.Client();
@@ -46,7 +47,7 @@ function cancelCheck(message, msg) {
 }
 
 function selectedServer(server, serverSelection) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
 
     return serverSelection;
@@ -498,9 +499,19 @@ client.on("message", async message => {
                     && !message.member.roles.cache.has(transferRoles.muted) 
                     && targetMember.roles.cache.has(transferRoles.regular)){
                 message.reply(`please wait. . .`);
-                return await transferPoints(message, targetMember.id, args[1]);
+                var hours = hoursSinceLastTransfer(message.author.id);
+
+                if ( hours >= 24 || hours == -1 ){
+                    if (await transferPoints(message, targetMember.id, args[1]) == true) {
+                        return storeTransferHistory(message.author.id);
+                    }
+                } else if ( hours < 24 ) {
+                    return message.reply(`you need to wait **${((24 - hours) * 60).toFixed(2)}** more minutes (**${(24 - hours).toFixed(1)} hour(s)**) to transfer.`)
+                } else if ( hours == "NaN" ) {
+                    return message.reply(`something went wrong, please contact a member of staff.`)
+                } 
             } 
-            return message.reply(`you do not have the permission to transfer points.`)
+            return message.reply(`you or the recipient do not have the permission to transfer / receive transfer.`)
         }
     }
 });

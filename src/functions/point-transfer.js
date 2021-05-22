@@ -15,9 +15,11 @@ async function transferPoints(message, toUserID, amount) {
     }
     //TODO: Add to user bal
     if ( await addUserAmountBank(message.guild.id, toUserID, amount) == true && deducted == true ) {
-        return message.reply(`you have transfered ${amount} points to <@${toUserID}>'s bank balance.`);
+        message.reply(`you have transfered **${amount}** points to <@${toUserID}>'s bank balance.`);
+        return true;
     } else {
-        return message.reply(`something went wrong during the transfer, please try again later.`);
+        message.reply(`something went wrong during the transfer, please try again later.`);
+        return false;
     }
 }
 
