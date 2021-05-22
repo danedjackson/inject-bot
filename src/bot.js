@@ -24,10 +24,11 @@ const adminUsers = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./json/fr
 const transferRoles = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./json/transfer-roles.json")));
 
 var processing = false;
-var { getSteamID, updateSteamID, addSteamID } = require('./api/steam_manager');
+var { getSteamID, updateSteamID, addSteamID } = require('./api/steamManager');
 var { getUserAmount, deductUserAmountCash, deductUserAmountBank } = require('./api/unbelievaboat');
-var { transferPoints } = require('./functions/point-transfer');
-var { storeTransferHistory, hoursSinceLastTransfer } = require('./functions/time-manager');
+var { transferPoints } = require('./functions/pointTransfer');
+var { storeTransferHistory, hoursSinceLastTransfer } = require('./functions/timeManager');
+var { confirmTransfer } = require('./embeds/embed');
 
 //Create an instance of client
 const client = new Discord.Client();
@@ -498,12 +499,16 @@ client.on("message", async message => {
             if (message.member.roles.cache.has(transferRoles.regular) 
                     && !message.member.roles.cache.has(transferRoles.muted) 
                     && targetMember.roles.cache.has(transferRoles.regular)){
-                message.reply(`please wait. . .`);
+                
+                if ( await confirmTransfer(message, args[1]) != true) return false
+                
                 var hours = hoursSinceLastTransfer(message.author.id);
-
+                
                 if ( hours >= 24 || hours == -1 ){
                     if (await transferPoints(message, targetMember.id, args[1]) == true) {
                         return storeTransferHistory(message.author.id);
+                    } else {
+                        return false;
                     }
                 } else if ( hours < 24 ) {
                     return message.reply(`you need to wait **${((24 - hours) * 60).toFixed(2)}** more minutes (**${(24 - hours).toFixed(1)} hour(s)**) to transfer.`)

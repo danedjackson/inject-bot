@@ -18,7 +18,7 @@ async function transferPoints(message, toUserID, amount) {
         message.reply(`you have transfered **${amount}** points to <@${toUserID}>'s bank balance.`);
         return true;
     } else {
-        message.reply(`something went wrong during the transfer, please try again later.`);
+        message.reply(`something went wrong during the transfer, please check that you have entered the command correctly and / or try again later.`);
         return false;
     }
 }
