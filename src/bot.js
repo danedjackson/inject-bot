@@ -295,7 +295,7 @@ client.on("message", async message => {
                         );
                     }
                     //Trike check
-                    if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
+                    // if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
                     let money = await getUserAmount(message.guild.id, message.author.id);
                     bank = parseInt(money[0]);
                     cash = parseInt(money[1]);
@@ -346,7 +346,7 @@ client.on("message", async message => {
                         );
                     }
                     //Trike check
-                    if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
+                    // if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
                     //waits for axios to finish its call to assign cash and bank values.
                     let money = await getUserAmount(message.guild.id, message.author.id);
                     bank = parseInt(money[0]);
@@ -447,7 +447,7 @@ client.on("message", async message => {
                 );
             }
             //Trike check
-            if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
+            // if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
             if(processing) message.reply(`waiting on other user(s) to complete their order. . .`);
             while (processing){
                 console.log(`${message.author.username}[${message.author.id}] is waiting in queue. . .`);
@@ -481,7 +481,7 @@ client.on("message", async message => {
                 );
             }
             //Trike check
-            if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
+            // if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
             if(processing) message.reply(`waiting on other user(s) to complete their order. . .`);
             while (processing){
                 console.log(`${message.author.username}[${message.author.id}] is waiting in queue. . .`);
@@ -601,7 +601,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                 return message.reply(`Spinosaurus has to be male to receive a grow.`);
             }
             //Switch trike name for this check
-            if(dinoName.toLowerCase() == "triceratops") dinoName = "trike";
+            // if(dinoName.toLowerCase() == "triceratops") dinoName = "trike";
             if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) !== -1 
                     || dinoName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) !== -1
                     || (dinoName.toLowerCase().replace(" ", "").replace("-", "").indexOf("subrex") !== -1 
