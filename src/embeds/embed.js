@@ -35,4 +35,6 @@ async function confirmTransfer(message, amount){
         return true;
 }
 
+//TODO: Add the rest of the embeds here
+
 module.exports = { confirmTransfer }

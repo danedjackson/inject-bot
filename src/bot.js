@@ -48,7 +48,7 @@ function cancelCheck(message, msg) {
 }
 
 function selectedServer(server, serverSelection) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
 
     return serverSelection;
@@ -308,7 +308,8 @@ client.on("message", async message => {
                             break;
                         }
                     }
-                    
+                    console.log(`User: ${message.author.username} | Bank Amount: ${bank} | Cash Amount: ${cash} | Dino Price: ${price}`);
+
                     if(!price) {
                         return message.reply(`that dino cannot be injected.`);
                     }
@@ -354,12 +355,13 @@ client.on("message", async message => {
         
                     //Getting price of dinosaur from json object.
                     for (var x = 0; x < dinoPrices.length; x++){
-                        if (dinoPrices[x].Dino.toLowerCase()
+                        if (dinoPrices[x].ShortName.toLowerCase()
                                         .indexOf(dinoName.toLowerCase().replace(" ", "").replace("-", "")) != -1){
                             price = parseInt(dinoPrices[x].Price);
                             break;
                         }
                     }
+                    console.log(`User: ${message.author.username} | Bank Amount: ${bank} | Cash Amount: ${cash} | Dino Price: ${price}`);
                     if (processing) {
                         questions.fields = [];
                         questions.addFields({name: "waiting on other user(s) to complete their order", value: ". . ."});
@@ -626,14 +628,14 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                 }
                 //Adding 0.5 to Z axis
                 if (server === "1" || server === "2") {
-                    var locationParts;
-                    locationParts = contents.Location_Isle_V3.split("Z=", 2);
-                    locationParts[1] = parseFloat(locationParts[1]);
-                    locationParts[1] += 0.9;
-                    locationParts[0] += "Z=";
-                    locationParts[1] = locationParts[1].toString();
-                    var completed = locationParts[0] + locationParts[1];
-                    contents.Location_Isle_V3 = completed;
+                    // var locationParts;
+                    // locationParts = contents.Location_Isle_V3.split("Z=", 2);
+                    // locationParts[1] = parseFloat(locationParts[1]);
+                    // locationParts[1] += 0.9;
+                    // locationParts[0] += "Z=";
+                    // locationParts[1] = locationParts[1].toString();
+                    // var completed = locationParts[0] + locationParts[1];
+                    // contents.Location_Isle_V3 = completed;
                 }
                 contents.Growth = "1.0";
                 contents.Hunger = "9999";
@@ -709,6 +711,8 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 async function ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection) {
     serverSelection = selectedServer(server, serverSelection);
 
+    console.log(`Price at Upload: ${price}`);
+
     let ftpClient = new ftp.Client();
     console.log("Uploading file. . .");
     //ftpClient.ftp.verbose = true;
@@ -742,10 +746,10 @@ async function ftpUpload(message, server, option, fileId, price, paymentMethod, 
                 return message.reply(`something went wrong, please try again later.`);
             }
             if(paymentMethod.indexOf("cash") != -1) {
-                await deductUserAmountCash(message.guild.id, message.author.id, price);
+                console.log(await deductUserAmountCash(message.guild.id, message.author.id, price));
             } 
             if(paymentMethod.indexOf("bank") != -1) {
-                await deductUserAmountBank(message.guild.id, message.author.id, price);
+                console.log(await deductUserAmountBank(message.guild.id, message.author.id, price));
             }
         }
         var status = await ftpClient.uploadFrom(fileId + ".json", serverSelection+fileId + ".json");
