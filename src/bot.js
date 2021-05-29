@@ -48,7 +48,7 @@ function cancelCheck(message, msg) {
 }
 
 function selectedServer(server, serverSelection) {
-    if(server === "1") serverSelection = "/" + ftpLocation +"_14010/TheIsle/Saved/Databases/Sandbox/Players/";
+    if(server === "1") serverSelection = "/" + ftpLocation +"_14000/TheIsle/Saved/Databases/Survival/Players/";
     if(server === "2") serverSelection = "/" + ftpLocation +"_14200/TheIsle/Saved/Databases/Survival/Players/";
 
     return serverSelection;
@@ -628,14 +628,14 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                 }
                 //Adding 0.5 to Z axis
                 if (server === "1" || server === "2") {
-                    // var locationParts;
-                    // locationParts = contents.Location_Isle_V3.split("Z=", 2);
-                    // locationParts[1] = parseFloat(locationParts[1]);
-                    // locationParts[1] += 0.9;
-                    // locationParts[0] += "Z=";
-                    // locationParts[1] = locationParts[1].toString();
-                    // var completed = locationParts[0] + locationParts[1];
-                    // contents.Location_Isle_V3 = completed;
+                    var locationParts;
+                    locationParts = contents.Location_Isle_V3.split("Z=", 2);
+                    locationParts[1] = parseFloat(locationParts[1]);
+                    locationParts[1] += 1.2;
+                    locationParts[0] += "Z=";
+                    locationParts[1] = locationParts[1].toString();
+                    var completed = locationParts[0] + locationParts[1];
+                    contents.Location_Isle_V3 = completed;
                 }
                 contents.Growth = "1.0";
                 contents.Hunger = "9999";
