@@ -306,7 +306,7 @@ client.on("message", async message => {
                         );
                     }
                     //Trike check
-                    if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
+                    // if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
                     let money = await getUserAmount(message.guild.id, message.author.id);
                     bank = parseInt(money[0]);
                     cash = parseInt(money[1]);
@@ -319,7 +319,8 @@ client.on("message", async message => {
                             break;
                         }
                     }
-                    
+                    console.log(`User: ${message.author.username} | Bank Amount: ${bank} | Cash Amount: ${cash} | Dino Price: ${price}`);
+
                     if(!price) {
                         return message.reply(`that dino cannot be injected.`);
                     }
@@ -356,7 +357,7 @@ client.on("message", async message => {
                         );
                     }
                     //Trike check
-                    if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
+                    // if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
                     //waits for axios to finish its call to assign cash and bank values.
                     let money = await getUserAmount(message.guild.id, message.author.id);
                     bank = parseInt(money[0]);
@@ -365,12 +366,13 @@ client.on("message", async message => {
         
                     //Getting price of dinosaur from json object.
                     for (var x = 0; x < dinoPrices.length; x++){
-                        if (dinoPrices[x].Dino.toLowerCase()
+                        if (dinoPrices[x].ShortName.toLowerCase()
                                         .indexOf(dinoName.toLowerCase().replace(" ", "").replace("-", "")) != -1){
                             price = parseInt(dinoPrices[x].Price);
                             break;
                         }
                     }
+                    console.log(`User: ${message.author.username} | Bank Amount: ${bank} | Cash Amount: ${cash} | Dino Price: ${price}`);
                     if (processing) {
                         questions.fields = [];
                         questions.addFields({name: "waiting on other user(s) to complete their order", value: ". . ."});
@@ -458,7 +460,7 @@ client.on("message", async message => {
                 );
             }
             //Trike check
-            if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
+            // if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
             if(processing) message.reply(`waiting on other user(s) to complete their order. . .`);
             while (processing){
                 console.log(`${message.author.username}[${message.author.id}] is waiting in queue. . .`);
@@ -492,7 +494,7 @@ client.on("message", async message => {
                 );
             }
             //Trike check
-            if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
+            // if(dinoName.toLowerCase() == "trike") dinoName = "triceratops";
             if(processing) message.reply(`waiting on other user(s) to complete their order. . .`);
             while (processing){
                 console.log(`${message.author.username}[${message.author.id}] is waiting in queue. . .`);
@@ -667,7 +669,7 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
                 return message.reply(`Spinosaurus has to be male to receive a grow.`);
             }
             //Switch trike name for this check
-            if(dinoName.toLowerCase() == "triceratops") dinoName = "trike";
+            // if(dinoName.toLowerCase() == "triceratops") dinoName = "trike";
             if (contents.CharacterClass.toLowerCase().indexOf(dinoName.toLowerCase()) !== -1 
                     || dinoName.toLowerCase().indexOf(contents.CharacterClass.toLowerCase()) !== -1
                     || (dinoName.toLowerCase().replace(" ", "").replace("-", "").indexOf("subrex") !== -1 
@@ -766,13 +768,13 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 
             if (server === "2") {
                 var locationParts;
-                locationParts = contents.Location_Thenyaw_Island.split("Z=", 2);
+                locationParts = contents.Location_Isle_V3.split("Z=", 2);
                 locationParts[1] = parseFloat(locationParts[1]);
                 locationParts[1] += 0.9;
                 locationParts[0] += "Z=";
                 locationParts[1] = locationParts[1].toString();
                 var completed = locationParts[0] + locationParts[1];
-                contents.Location_Thenyaw_Island = completed;
+                contents.Location_Isle_V3 = completed;
             }
             contents.Growth = "1.0";
             contents.Hunger = "9999";
@@ -799,6 +801,8 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 async function ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection) {
     serverSelection = selectedServer(server, serverSelection);
 
+    console.log(`Price at Upload: ${price}`);
+    
     let ftpClient = new ftp.Client();
     console.log("Uploading file. . .");
     //ftpClient.ftp.verbose = true;
