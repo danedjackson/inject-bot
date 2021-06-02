@@ -27,6 +27,7 @@ var processing = false;
 var { getSteamID, updateSteamID, addSteamID } = require('./api/steamManager');
 var { getUserAmount, deductUserAmountCash, deductUserAmountBank } = require('./api/unbelievaboat');
 var { transferPoints } = require('./functions/pointTransfer');
+var { transferLives } = require('./functions/livesTransfer');
 var { storeTransferHistory, hoursSinceLastTransfer } = require('./functions/timeManager');
 var { confirmTransfer } = require('./embeds/embed');
 
@@ -495,6 +496,10 @@ client.on("message", async message => {
         }
 
         if (cmdName.toLowerCase() === 'givepoints') {
+            if (message.channel.id != transferRoles.transferChannel){
+                return message.reply(`please use <#${transferRoles.transferChannel}>`);
+            }
+
             if (args.length != 2) return message.reply(`please use this format (without the [ ]):\n${prefix}givepoints [@PlayerToGive] [amount to give]`);
 
             var targetMember = message.mentions.members.first();
@@ -515,7 +520,39 @@ client.on("message", async message => {
                 } else if ( hours < 24 ) {
                     return message.reply(`you need to wait **${((24 - hours) * 60).toFixed(2)}** more minutes (**${(24 - hours).toFixed(1)} hour(s)**) to transfer.`)
                 } else if ( hours == "NaN" ) {
-                    return message.reply(`something went wrong, please contact a member of staff.`)
+                    return message.reply(`something went wrong.`)
+                } 
+            } 
+            return message.reply(`you or the recipient do not have the permission to transfer / receive transfer.`)
+        }
+
+        if (cmdName.toLowerCase() === 'givelives') {
+            if (message.channel.id != transferRoles.transferChannel){
+                return message.reply(`please use <#${transferRoles.transferChannel}>`);
+            }
+
+            if (args.length != 2) return message.reply(`please use this format (without the [ ]):\n${prefix}givelives [@PlayerToGive] [amount to give]`);
+
+            var targetMember = message.mentions.members.first();
+
+            if (message.member.roles.cache.has(transferRoles.regular) 
+                    && !message.member.roles.cache.has(transferRoles.muted) 
+                    && targetMember.roles.cache.has(transferRoles.regular)){
+                
+                if ( await confirmTransfer(message, args[1]) != true) return false
+                
+                var hours = hoursSinceLastTransfer(message.author.id);
+                
+                if ( hours >= 24 || hours == -1 ){
+                    if (transferLives(message, targetMember.id, args[1]) == true) {
+                        return storeTransferHistory(message.author.id);
+                    } else {
+                        return false;
+                    }
+                } else if ( hours < 24 ) {
+                    return message.reply(`you need to wait **${((24 - hours) * 60).toFixed(2)}** more minutes (**${(24 - hours).toFixed(1)} hour(s)**) to transfer.`)
+                } else if ( hours == "NaN" ) {
+                    return message.reply(`something went wrong.`)
                 } 
             } 
             return message.reply(`you or the recipient do not have the permission to transfer / receive transfer.`)
