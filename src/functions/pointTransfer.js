@@ -7,7 +7,6 @@ async function transferPoints(message, toUserID, amount) {
     var userCash = parseInt(userAmount[1]);
     amount = parseInt(amount.replace(/\D/g, ''));
 
-    console.log(amount);
     if ( userBank < amount && userCash < amount ) {
         return message.reply(`you do not have enough points to transfer`);
     } else if ( userBank >= amount ) {
