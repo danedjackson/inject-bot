@@ -162,6 +162,9 @@ client.on("message", async message => {
 
         //Await Message for interactive buying
         if (cmdName.toLowerCase() === 'buy') {
+            if (message.channel.id != transferRoles.growChannel){
+                return message.reply(`please use <#${transferRoles.growChannel}>`);
+            }
             if (args.length == 0) {
                 var msg;
                 var command;

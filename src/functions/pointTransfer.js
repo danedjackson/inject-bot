@@ -5,8 +5,10 @@ async function transferPoints(message, toUserID, amount) {
     var userAmount = await getUserAmount(message.guild.id, message.author.id);
     var userBank = parseInt(userAmount[0]);
     var userCash = parseInt(userAmount[1]);
+    amount = parseInt(amount.replace(/\D/g, ''));
 
-    if ( userBank < amount && userCash < amount + 0 ) {
+    console.log(amount);
+    if ( userBank < amount && userCash < amount ) {
         return message.reply(`you do not have enough points to transfer`);
     } else if ( userBank >= amount ) {
         deducted = await deductUserAmountBank(message.guild.id, message.author.id, amount);
