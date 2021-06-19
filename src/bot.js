@@ -506,9 +506,16 @@ client.on("message", async message => {
             if (args.length != 2) return message.reply(`please use this format (without the [ ]):\n${prefix}givepoints [@PlayerToGive] [amount to give]`);
 
             var targetMember = message.mentions.members.first();
+            var checkTarget = false;
+            try {
+                checkTarget = targetMember.roles.cache.has(transferRoles.regular);
+            } catch (err) {
+                console.log(`Error transferring: ${err}` );
+                return message.reply(`something went wrong with the transfer, please try again.`);
+            }
             if (message.member.roles.cache.has(transferRoles.regular) 
                     && !message.member.roles.cache.has(transferRoles.muted) 
-                    && targetMember.roles.cache.has(transferRoles.regular)){
+                    && checkTarget){
                 
                 if ( await confirmTransfer(message, args[1]) != true) return false
                 
