@@ -30,7 +30,7 @@ var { transferPoints } = require('./functions/pointTransfer');
 var { transferLives } = require('./functions/livesTransfer');
 var { storeTransferHistory, hoursSinceLastTransfer } = require('./functions/timeManager');
 var { confirmTransfer } = require('./embeds/embed');
-var { setHappyHour, removeHappyHour, isHappyHour } = require('./functions/happyHour');
+var { setHappyHour, removeHappyHour, isHappyHour, addHappyHourDay } = require('./functions/happyHour');
 
 //Create an instance of client
 const client = new Discord.Client();
@@ -584,7 +584,33 @@ client.on("message", async message => {
             } 
             return message.reply(`you or the recipient do not have the permission to transfer / receive transfer.`)
         }
+        if(cmdName.toLowerCase() === 'addhappyday') {
+            permCheck = false;
+            for (var x = 0; x < adminUsers.length; x++) {
+                if (message.member.roles.cache.has(adminUsers[x].id)){
+                    permCheck = true;
+                    break;
+                } 
+            }
+            if (!permCheck) {
+                return message.reply(`you do not have the permissions to use this command.`);
+            }
+            
+            if (args.length != 1) {
+                return message.reply(`the correct format is ${prefix}sethappyday [Day in DDD]
+                \nExample: **${prefix}sethappyday Wed**`);
+            }
+            var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
+            if ( !daysArray.includes(args[0].toLowerCase()) ) {
+                return message.reply(`invalid day entered, enter the first 3 letters of the day please`);
+            }
+
+            if ( addHappyHourDay(args[0]) ){
+                return message.reply(`you have updated happy hour days.`)
+            }
+        }
+        
         if(cmdName.toLowerCase() === 'sethappyhour') {
             //Checking for staff privileges
             permCheck = false;
@@ -809,11 +835,9 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 async function ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection) {
     serverSelection = selectedServer(server, serverSelection);
 
-    if ( server == "2" ) {
-        if ( isHappyHour ) {
-            price = parseInt(price / 2, 10);
-            message.reply(`dino cost was discounted for happy hour event!`);
-        }
+    if ( server == "2" && isHappyHour ) {
+        price = parseInt(price / 2, 10);
+        message.reply(`dino cost was discounted for happy hour event!`);   
     }
 
     console.log(`Price at Upload: ${price}`);
