@@ -30,6 +30,7 @@ var { transferPoints } = require('./functions/pointTransfer');
 var { transferLives } = require('./functions/livesTransfer');
 var { storeTransferHistory, hoursSinceLastTransfer } = require('./functions/timeManager');
 var { confirmTransfer } = require('./embeds/embed');
+var { setHappyHour, removeHappyHour, isHappyHour } = require('./functions/happyHour');
 
 //Create an instance of client
 const client = new Discord.Client();
@@ -232,8 +233,15 @@ client.on("message", async message => {
                     if(timedOut) {return false;}
                     questions.fields = [];
                     var msg = "";
-                    for (var x = 0; x < injectDinoPrices.length; x++) {
-                        msg += `${injectDinoPrices[x].ShortName}: $${injectDinoPrices[x].Price.toLocaleString()}\n`;
+                    if ( server == "2" && isHappyHour() ) {
+                        msg += `✨✨***(HALF PRICE HAPPY HOUR EVENT IN PROGRESS)***✨✨\n`
+                        for (var x = 0; x < injectDinoPrices.length; x++) {
+                            msg += `${injectDinoPrices[x].ShortName}: $${(injectDinoPrices[x].Price/2).toLocaleString()}\n`
+                        }
+                    } else {
+                        for (var x = 0; x < injectDinoPrices.length; x++) {
+                            msg += `${injectDinoPrices[x].ShortName}: $${injectDinoPrices[x].Price.toLocaleString()}\n`;
+                        }
                     }
                     questions.addFields({name: "Type the name of the dinosaur you desire", value: msg});
                     message.reply(questions);
@@ -244,9 +252,18 @@ client.on("message", async message => {
                     if(timedOut) {return false;}
                     questions.fields = [];
                     var msg = "";
-                    for (var x = 0; x < dinoPrices.length; x++) {
-                        if(dinoPrices[x].Growable.toLowerCase() == "y") {
-                            msg += `${dinoPrices[x].ShortName}: $${dinoPrices[x].Price.toLocaleString()}\n`;
+                    if ( server == "2" && isHappyHour() ) {
+                        msg += `✨✨***(HALF PRICE HAPPY HOUR EVENT IN PROGRESS)***✨✨\n`;
+                        for (var x = 0; x < dinoPrices.length; x++) {
+                            if(dinoPrices[x].Growable.toLowerCase() == "y") {
+                                msg += `${dinoPrices[x].ShortName}: $${(dinoPrices[x].Price/2).toLocaleString()}\n`;
+                            }
+                        }
+                    } else {
+                        for (var x = 0; x < dinoPrices.length; x++) {
+                            if(dinoPrices[x].Growable.toLowerCase() == "y") {
+                                msg += `${dinoPrices[x].ShortName}: $${dinoPrices[x].Price.toLocaleString()}\n`;
+                            }
                         }
                     }
                     questions.addFields({name: "Type the name of the dinosaur you desire", value: msg});
@@ -567,6 +584,40 @@ client.on("message", async message => {
             } 
             return message.reply(`you or the recipient do not have the permission to transfer / receive transfer.`)
         }
+
+        if(cmdName.toLowerCase() === 'sethappyhour') {
+            //Checking for staff privileges
+            permCheck = false;
+            for (var x = 0; x < adminUsers.length; x++) {
+                if (message.member.roles.cache.has(adminUsers[x].id)){
+                    permCheck = true;
+                    break;
+                } 
+            }
+            if (!permCheck) {
+                return message.reply(`you do not have the permissions to use this command.`);
+            }
+            
+            if (args.length != 2) {
+                return message.reply(`the correct format is ${prefix}sethappyhour [Start Time in HH:MM] [End Time in HH:MM]
+                \nExample: **${prefix}sethappyhour 13:30 15:30**`);
+            }
+
+            if ( setHappyHour(args[0], args[1]) ) {
+                return message.reply(`time has been updated. Grows will be for half the points for server 2 during these hours:
+                \n***${args[0]} (GMT -5:00) and ${args[1]} (GMT -5:00)***`);
+            } else {
+                return message.reply(`something went wrong setting the happy hour times.`);
+            }
+        }
+
+        if (cmdName.toLowerCase() === 'removehappyhour') {
+            if ( removeHappyHour() ) {
+                return message.reply(`removed current happy hour times.`);
+            } else {
+                return message.reply(`could not remove current happy hour times.`);
+            }
+        }
     }
 });
 
@@ -757,6 +808,13 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 
 async function ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection) {
     serverSelection = selectedServer(server, serverSelection);
+
+    if ( server == "2" ) {
+        if ( isHappyHour ) {
+            price = parseInt(price / 2, 10);
+            message.reply(`dino cost was discounted for happy hour event!`);
+        }
+    }
 
     console.log(`Price at Upload: ${price}`);
     let ftpClient = new ftp.Client();
