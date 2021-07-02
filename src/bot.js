@@ -389,6 +389,13 @@ client.on("message", async message => {
                             break;
                         }
                     }
+
+                    //Checking eligibility of half price
+                    if ( server == "2" && isHappyHour() ) {
+                        price = parseInt(price / 2, 10);
+                        message.reply(`dino cost was discounted for happy hour event!`);   
+                    }
+
                     console.log(`User: ${message.author.username} | Bank Amount: ${bank} | Cash Amount: ${cash} | Dino Price: ${price}`);
                     if (processing) {
                         questions.fields = [];
