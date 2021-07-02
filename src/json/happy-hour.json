@@ -1,9 +1,10 @@
 {
-    "from": "18:00",
-    "to": "19:00",
+    "from": null,
+    "to": null,
     "day": [
+        "Sun",
+        "Mon",
         "Wed",
-        "Thu",
-        "Mon"
+        "Fri"
     ]
 }

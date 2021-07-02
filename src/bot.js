@@ -334,6 +334,13 @@ client.on("message", async message => {
                     if(!price) {
                         return message.reply(`that dino cannot be injected.`);
                     }
+
+                    //Checking eligibility of half price
+                    if ( server == "2" && isHappyHour() ) {
+                        price = parseInt(price / 2, 10);
+                        message.reply(`dino cost was discounted for happy hour event!`);   
+                    }
+
                     if (processing) {
                         questions.fields = [];
                         questions.addFields({name: "waiting on other user(s) to complete their order", value: ". . ."});
@@ -835,10 +842,6 @@ async function editJson(message, server, option, fileId, dinoName, price, paymen
 async function ftpUpload(message, server, option, fileId, price, paymentMethod, permCheck, isBuy, serverSelection) {
     serverSelection = selectedServer(server, serverSelection);
 
-    if ( server == "2" && isHappyHour ) {
-        price = parseInt(price / 2, 10);
-        message.reply(`dino cost was discounted for happy hour event!`);   
-    }
 
     console.log(`Price at Upload: ${price}`);
     let ftpClient = new ftp.Client();
